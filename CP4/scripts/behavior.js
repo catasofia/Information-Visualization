@@ -34,12 +34,12 @@ function createChoroplethMap() {
 		.join("path")
 		.attr("class", "country")
 		.attr("d", path)
-		.style("fill", function (d) {
-			if (d.properties.name == "Russia")
+		.style("fill", (function (d) {
+			return dataset.forEach(function(c){
 				return "green";
-			if (d.properties.name == "Portugal")
-				return "red";
-		})
+			})
+
+		}))
 		.on("mouseover", handleMouseOver)
 		.on("mouseleave", handleMouseLeave)
 		.attr("id", function (d, i) {
@@ -49,6 +49,13 @@ function createChoroplethMap() {
 		.text(function (d) {
 			return d.properties.name;
 		});
+}
+
+function checkColor(c) {
+	if (c.MedalsHost - c.MedalAverage > 20) {
+		console.log("oiii");
+		return "green";
+	}
 }
 
 function createLineChart(data) {
