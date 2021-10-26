@@ -1,5 +1,5 @@
 var map = "/data/countries50.json"
-var stats = "/data/participants_stats.js"
+var stats = "/data/withcont_0.js"
 var topology;
 function init() {
 	Promise.all([d3.json(map), d3.json("data/newjson_0.js"), d3.json(stats)]).then(function ([map, data, stats]) {
@@ -35,7 +35,7 @@ function createChoroplethMap() {
 		.attr("class", "country")
 		.attr("d", path)
 		.style("fill", (function (d) {
-			return dataset.forEach(function(c){
+			return dataset.forEach(function (c) {
 				return "green";
 			})
 
@@ -59,7 +59,7 @@ function checkColor(c) {
 }
 
 function createLineChart(data) {
-	width = 600;
+	width = 900;
 
 	height = 400;
 
@@ -85,11 +85,16 @@ function createLineChart(data) {
 		.domain([0, d3.max(data, (d) => d.ParticipantsEvolution)])
 		.range([height - margin.bottom, margin.top]);
 
+	var years = [];
+	dataset.forEach(function (d) {
+		years.push(d.Year);
+	})
+
 	xAxis = (g) =>
 		g.attr("transform", `translate(0, ${height - margin.bottom})`).call(
 			d3
 				.axisBottom(x)
-				.ticks(28)
+				.tickValues(years)
 				.tickFormat((x) => x)
 				.tickSizeOuter(0)
 		);
@@ -145,6 +150,20 @@ function createClevelandMedalsPerPart(stats) {
 		width = 460 - margin.left - margin.right,
 		height = 1000;
 
+	/* var sumMedals = 0;
+	var sumPartic = 0
+
+	d3.nest().key(function(d){
+		return d.Continent;
+	}).rollup(function(leaves){
+		sumMedals = d3.sum(leaves,function(d){
+			return d.NrMedals;
+		})
+		sumPartic = d3.sum(leaves, function(d){
+			return d.Participants;
+		})
+	});
+ */
 	const svg = d3.select("#secondLine")
 		.append("svg")
 		.attr("width", width + margin.left + margin.right)
