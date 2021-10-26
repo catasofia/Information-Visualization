@@ -34,11 +34,13 @@ function createChoroplethMap() {
 		.join("path")
 		.attr("class", "country")
 		.attr("d", path)
+		.style("fill", "pink")
 		.style("fill", (function (d) {
-			return dataset.forEach(function (c) {
-				return "green";
-			})
-
+			for(const x of dataset){
+				if(d.properties.name === x.Country){
+					return d3.interpolateRgb("white", "green")((x.MedalsHost - x.MedalAverage)/200);
+				}
+			}
 		}))
 		.on("mouseover", handleMouseOver)
 		.on("mouseleave", handleMouseLeave)
