@@ -9,6 +9,7 @@ function init() {
 		createLineChart(data);
 		createClevelandMedalsPerPart(stats);
 		createClevelandMedalsPerGender(stats);
+		createProgressBar(stats);
 		addZoom();
 	});
 }
@@ -277,6 +278,44 @@ function createClevelandMedalsPerGender(stats) {
 		.attr("r", "6")
 		.style("fill", "blue")
 		.append("title")
+}
+
+function createProgressBar(stats){
+	const width = 450;
+    height = 450;
+
+	const radius = 50;
+
+	const svg = d3.select("#clevelandMedalsPart")
+	.append("svg")
+		.attr("width", width)
+		.attr("height", height)
+	.append("g")
+		.attr("transform", `translate(${width / 2},${height / 2})`);
+
+	const pie = d3.pie()
+	.value(d=>d[1])
+
+	const opacity = d3.scaleOrdinal()
+  	.range([1,0])
+	
+	const data_ready = pie([['pais', 70], ['', 30]])
+
+	svg
+	.selectAll('whatever')
+	.data(data_ready)
+	.join('path')
+	.attr('d', d3.arc()
+		.innerRadius(30)         // This is the size of the donut hole
+		.outerRadius(radius)
+	)
+	.attr('fill', "#ff1493")
+	.style("opacity", d => opacity(d.data[0]))
+
+	svg.append("text")
+   .attr("text-anchor", "middle")
+   .text( '70%')
+   .attr("font-size","15px");
 }
 
 function handleMouseOver(event, d) {
