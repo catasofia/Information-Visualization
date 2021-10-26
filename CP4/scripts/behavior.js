@@ -63,7 +63,7 @@ function createLineChart(data) {
 
 	height = 400;
 
-	margin = { top: 20, right: 20, bottom: 20, left: 40 };
+	margin = { top: 20, right: 40, bottom: 20, left: 40 };
 
 	line = d3
 		.line()
@@ -78,7 +78,7 @@ function createLineChart(data) {
 	x = d3
 		.scaleLinear()
 		.domain(d3.extent(data, (d) => d.Year))
-		.range([margin.left, width]);
+		.range([margin.left, width - 20]);
 
 	y = d3
 		.scaleLinear()
