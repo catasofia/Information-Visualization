@@ -48,6 +48,7 @@ function createChoroplethMap() {
 				if (!countries.includes(d.properties.name))
 					return "#cccccc";
 				if (d.properties.name === x.Country) {
+					if((x.MedalsHost-x.MedalAverage) < 0) return "#f62217";
 					return d3.interpolateRgb("white", "green")((x.MedalsHost - x.MedalAverage) / 200);
 				}
 			}
