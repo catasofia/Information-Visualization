@@ -98,18 +98,13 @@ function createLineChart(data, group) {
 		.scaleLinear()
 		.domain(d3.extent(data, (d) => d.Year))
 		.range([margin.left, width - 20]);
-	if (group === "General") {
-		y = d3
-			.scaleLinear()
-			.domain([0, d3.max(data, (d) => d.ParticipantsEvolution)])
-			.range([height - margin.bottom, margin.top]);
-	}
-	else {
-		y = d3
-			.scaleLinear()
-			.domain([0, d3.max(data, (d) => d.WomenEvolution)])
-			.range([height - margin.bottom, margin.top]);
-	}
+
+	y = d3
+		.scaleLinear()
+		.domain([0, d3.max(data, (d) => d.ParticipantsEvolution)])
+		.range([height - margin.bottom, margin.top]);
+
+
 	var years = [];
 	dataset.forEach(function (d) {
 		years.push(d.Year);
