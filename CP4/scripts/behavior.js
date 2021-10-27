@@ -1,12 +1,15 @@
 var map = "/data/countries50.json"
 var stats = "/data/withcont_0.js"
 var topology;
+var selectedCountries = [];
+var selectedGroup = "General";
 function init() {
 	Promise.all([d3.json(map), d3.json("data/newjson_0.js"), d3.json(stats)]).then(function ([map, data, stats]) {
 		topology = map;
 		dataset = data;
+		datastats = stats;
 		createChoroplethMap();
-		createLineChart(data);
+		createLineChart(data, "General");
 		createClevelandMedalsPerPart(stats);
 		createClevelandMedalsPerGender(stats);
 		createProgressBar(stats);
@@ -35,33 +38,46 @@ function createChoroplethMap() {
 		.join("path")
 		.attr("class", "country")
 		.attr("d", path)
-		.style("fill", "pink")
+		.style("stroke", "#333333")
 		.style("fill", (function (d) {
-			for(const x of dataset){
-				if(d.properties.name === x.Country){
-					return d3.interpolateRgb("white", "green")((x.MedalsHost - x.MedalAverage)/200);
+			var countries = [];
+			dataset.forEach(function (i) {
+				countries.push(i.Country);
+			})
+			for (const x of dataset) {
+				if (!countries.includes(d.properties.name))
+					return "#cccccc";
+				if (d.properties.name === x.Country) {
+					return d3.interpolateRgb("white", "green")((x.MedalsHost - x.MedalAverage) / 200);
 				}
 			}
 		}))
 		.on("mouseover", handleMouseOver)
 		.on("mouseleave", handleMouseLeave)
+		//.on("click", handleMouseClick)
 		.attr("id", function (d, i) {
 			return d.properties.name;
 		})
 		.append("title")
 		.text(function (d) {
-			return d.properties.name;
+			var countries = [];
+			dataset.forEach(function (d) {
+				countries.push(d.Country);
+			})
+			for (const x of dataset) {
+				var output = "Country: " + d.properties.name;
+				if (!countries.includes(d.properties.name)) {
+					return output;
+				}
+				if (d.properties.name === x.Country) {
+					var difference = x.MedalsHost - x.MedalAverage;
+					return output + "\nDifference of Medals: " + difference + "\nHost in years: " + x.Year;
+				}
+			}
 		});
 }
 
-function checkColor(c) {
-	if (c.MedalsHost - c.MedalAverage > 20) {
-		console.log("oiii");
-		return "green";
-	}
-}
-
-function createLineChart(data) {
+function createLineChart(data, group) {
 	width = 900;
 
 	height = 400;
@@ -82,12 +98,18 @@ function createLineChart(data) {
 		.scaleLinear()
 		.domain(d3.extent(data, (d) => d.Year))
 		.range([margin.left, width - 20]);
-
-	y = d3
-		.scaleLinear()
-		.domain([0, d3.max(data, (d) => d.ParticipantsEvolution)])
-		.range([height - margin.bottom, margin.top]);
-
+	if (group === "General") {
+		y = d3
+			.scaleLinear()
+			.domain([0, d3.max(data, (d) => d.ParticipantsEvolution)])
+			.range([height - margin.bottom, margin.top]);
+	}
+	else {
+		y = d3
+			.scaleLinear()
+			.domain([0, d3.max(data, (d) => d.WomenEvolution)])
+			.range([height - margin.bottom, margin.top]);
+	}
 	var years = [];
 	dataset.forEach(function (d) {
 		years.push(d.Year);
@@ -131,21 +153,28 @@ function createLineChart(data) {
 	svg.select("g.lineXAxis").call(xAxis);
 	svg.select("g.lineYAxis").call(yAxis);
 
-	svg
-		.select("path")
-		.datum(data)
-		.attr("fill", "none")
-		.attr("stroke", "#61300d")
-		.attr("stroke-width", 1.5)
-		.attr("d", line)
-
-	svg
-		.append("svg:path")
-		.datum(data)
-		.attr("fill", "none")
-		.attr("stroke", "#ff1493")
-		.attr("stroke-width", 1.5)
-		.attr("d", line2)
+	if (group === "General") {
+		svg
+			.select("path")
+			.datum(data)
+			.attr("fill", "none")
+			.attr("stroke", "#61300d")
+			.attr("stroke-width", 2)
+			.transition()
+			.duration(3000)
+			.attr("d", line)
+	}
+	else {
+		svg
+			.select("path")
+			.datum(data)
+			.attr("fill", "none")
+			.attr("stroke", "#ff1493")
+			.attr("stroke-width", 2)
+			.transition()
+			.duration(3000)
+			.attr("d", line2)
+	}
 }
 
 function createClevelandMedalsPerPart(stats) {
@@ -167,7 +196,9 @@ function createClevelandMedalsPerPart(stats) {
 		})
 	});
  */
-	const svg = d3.select("#secondLine")
+
+	const svg = d3.select("#clevelandMedalsPart")
+
 		.append("svg")
 		.attr("width", width + margin.left + margin.right)
 		.attr("height", height + margin.top + margin.bottom)
@@ -229,7 +260,7 @@ function createClevelandMedalsPerGender(stats) {
 		width = 460 - margin.left - margin.right,
 		height = 1000;
 
-	const svg = d3.select("#secondLine")
+	const svg = d3.select("#clevelandMedalsPart")
 		.append("svg")
 		.attr("width", width + margin.left + margin.right)
 		.attr("height", height + margin.top + margin.bottom)
@@ -280,42 +311,42 @@ function createClevelandMedalsPerGender(stats) {
 		.append("title")
 }
 
-function createProgressBar(stats){
+function createProgressBar(stats) {
 	const width = 450;
-    height = 450;
+	height = 450;
 
 	const radius = 50;
 
-	const svg = d3.select("#clevelandMedalsPart")
-	.append("svg")
+	const svg = d3.select("#progressBar")
+		.append("svg")
 		.attr("width", width)
 		.attr("height", height)
-	.append("g")
+		.append("g")
 		.attr("transform", `translate(${width / 2},${height / 2})`);
 
 	const pie = d3.pie()
-	.value(d=>d[1])
+		.value(d => d[1])
 
 	const opacity = d3.scaleOrdinal()
-  	.range([1,0])
-	
+		.range([1, 0])
+
 	const data_ready = pie([['pais', 70], ['', 30]])
 
 	svg
-	.selectAll('whatever')
-	.data(data_ready)
-	.join('path')
-	.attr('d', d3.arc()
-		.innerRadius(30)         // This is the size of the donut hole
-		.outerRadius(radius)
-	)
-	.attr('fill', "#ff1493")
-	.style("opacity", d => opacity(d.data[0]))
+		.selectAll('whatever')
+		.data(data_ready)
+		.join('path')
+		.attr('d', d3.arc()
+			.innerRadius(30)         // This is the size of the donut hole
+			.outerRadius(radius)
+		)
+		.attr('fill', "#ff1493")
+		.style("opacity", d => opacity(d.data[0]))
 
 	svg.append("text")
-   .attr("text-anchor", "middle")
-   .text( '70%')
-   .attr("font-size","15px");
+		.attr("text-anchor", "middle")
+		.text('70%')
+		.attr("font-size", "15px");
 }
 
 function handleMouseOver(event, d) {
@@ -323,10 +354,18 @@ function handleMouseOver(event, d) {
 
 	choropleth
 		.selectAll("path")
+		.transition()
+		.duration(200)
+		.style("opacity", 0.5)
 		.filter(function (c) {
-			if (d.id == c.id) return c;
+			if (d.id == c.id) {
+				return c;
+			}
 		})
-		.style("opacity", 0.5);
+		.transition()
+		.duration(200)
+		.style("opacity", 1)
+		.style("stroke", "black")
 }
 
 function handleMouseLeave(event, d) {
@@ -334,10 +373,108 @@ function handleMouseLeave(event, d) {
 
 	choropleth
 		.selectAll("path")
+		.transition()
+		.duration(200)
+		.style("opacity", 0.8)
 		.filter(function (c) {
 			if (d.id == c.id) return c;
 		})
-		.style("opacity", 1);
+		.transition()
+		.duration(200)
+		.style("stroke", "#333333")
+}
+
+/* function handleMouseClick(event, d) {
+	choropleth = d3.select("div#choropleth").select("svg");
+	linechart = d3.select("div#secondLine").select("svg");
+
+	choropleth
+		.selectAll("path")
+		.filter(function (c) {
+			if (d.properties.name == c.properties.name) {
+				return c;
+			}
+		})
+		.style("stroke-width", 3);
+
+
+	dataset = dataset.filter(function (c) {
+		if (d.properties.name == c.Country) {
+			selectedCountries += d.properties.name;
+			console.log(selectedCountries);
+			return selectedCountries;
+		}
+	})
+	if (selectedGroup == "General") {
+		linechart
+			.select(".line")
+			.selectAll("circle")
+			.data(dataset, function (i) {
+				return i.Year;
+			})
+			.join(
+				(enter) => {
+					return enter
+						.append("circle")
+						.attr("cx", (d) => x(d.Year))
+						.attr("cy", (d) => y(d.ParticipantsEvolution))
+						.attr("r", 5)
+				},
+			(update) => {
+				update
+					.append("circle")
+					.attr("cx", (d) => x(d.Year))
+					.attr("cy", (d) => y(d.ParticipantsEvolution))
+					.attr("r", 5)
+			},
+			(exit) => {
+				exit.remove();
+			} );
+	} 
+	else {
+		linechart
+			.select(".line")
+			.selectAll("circle")
+			.data(dataset, function (i) {
+				return i.Year;
+			})
+			.join(
+				(enter) => {
+					return enter
+						.append("circle")
+						.attr("cx", (d) => x(d.Year))
+						.attr("cy", (d) => y(d.ParticipantsEvolution))
+						.attr("r", 5)
+						.style("fill", "#ff1493")
+				});
+	}
+
+} */
+
+function update(selectedGroup) {
+	switch (selectedGroup) {
+		case "General":
+			createLineChart(dataset, "General");
+			selectedGroup = "General";
+			break;
+		case "Women":
+			createLineChart(dataset, "Women");
+			selectedGroup = "Women";
+			break;
+	}
+}
+
+function handleOverLine(event, d) {
+	linechart = d3.select("div#secondLine").select("svg");
+
+	linechart
+		.select("g.line")
+		.append("line")
+		.attr("stroke-width", 5);
+}
+
+function handleLeaveLine(event, d) {
+
 }
 
 function addZoom() {

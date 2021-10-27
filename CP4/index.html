@@ -8,7 +8,7 @@
 	<meta name="author" content="Faculty">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-	<title>Boilerplate</title>
+	<title>Olympics G04</title>
 
 	<!-- Import libraries. -->
 	<script language="JavaScript" type="text/javascript" src="libs/d3.min.js"></script>
@@ -22,9 +22,11 @@
 	<!-- CSS -->
 	<link rel="stylesheet" href="style/styles.css">
 </head>
-
 <body onload="init()">
 	<div id="choropleth"></div>
+	<button onclick="update('General')">General</button>
+	<button onclick="update('Women')">Women</button>
+	<div id="progressBar"></div>
 	<div id="secondLine"></div>
 	<div id="clevelandMedalsPart"></div>
 </body>
