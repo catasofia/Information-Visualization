@@ -385,7 +385,16 @@ function handleMouseLeave(event, d) {
 function handleMouseClick(event, d) {
 	choropleth = d3.select("div#choropleth").select("svg");
 	linechart = d3.select("div#secondLine").select("svg");
-
+	if(selectedCountries.includes(d.properties.name)){
+	choropleth
+		.selectAll("path")
+		.filter(function (c) {
+			if (d.properties.name == c.properties.name) {
+				return c;
+			}
+		})
+		.style("stroke-width", 1);
+} else {
 	choropleth
 		.selectAll("path")
 		.filter(function (c) {
@@ -394,23 +403,60 @@ function handleMouseClick(event, d) {
 			}
 		})
 		.style("stroke-width", 3);
+}
+
+	
 
 	if (selectedCountries.includes(d.properties.name)) {
 		for (i = 0; i < selectedCountries.length; i++) {
 			if (selectedCountries[i] === d.properties.name) {
-				selectedCountries.pop(d.properties.name);
-				console.log("oii");
+				console.log(d.properties.name);
+				console.log(selectedCountries);	
+
+				var newlist = [];
+				newlist.push(d.properties.name);
+
+				selectedCountries = selectedCountries.filter( function( el ) {
+  				return !newlist.includes( el );
+				} );
+
+				//newlist = selectedCountries.remove(i);
+
+				console.log(selectedCountries);
 			}
 		}
-	}
+	} else{
+
+	console.log(selectedCountries);
+	console.log("aqui");
+	console.log(selectedCountries.includes(d.properties.name));
+
 
 	dataset1 = dataset.filter(function (c) {
-		if (d.properties.name === c.Country || selectedCountries.includes(c.Country)) {
-			console.log("oi" + selectedCountries);
+		if (d.properties.name === c.Country) {
+			if(!selectedCountries.includes(d.properties.name)){
+				console.log("oi" + d.properties.name);
+				selectedCountries.push(d.properties.name);
+				return d.properties.name;
+			}
+			
+		} else if(selectedCountries.includes(c.Country)){
 			selectedCountries.push(d.properties.name);
 			return d.properties.name;
 		}
 	})
+	
+	}
+
+	console.log("coisas");
+
+	dataset1 = dataset.filter(function (c){
+		if(selectedCountries.includes(c.Country)){
+			return c.Country;
+		}
+	});
+
+		console.log(dataset1);
 
 
 	if (selectedGroup == "General") {
