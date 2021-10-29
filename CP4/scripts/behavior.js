@@ -22,7 +22,7 @@ function createListCountries() {
 
 	var countries = [];
 	datastats.forEach(function (i) {
-		countries.push(i.NOC);
+		countries.push(i.Country);
 	})
 	// Initialize the button
 	var dropdownButton = d3.select("#progressBar")
