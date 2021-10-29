@@ -458,7 +458,7 @@ function handleMouseClick(event, d) {
 			})
 			.style("stroke-width", 3);
 
-	} else if (countriesNotHost.includes(d.properties.name) && !selectedCountriesNotHost.includes(d.properties.name)) {
+	} else if (!selectedCountriesNotHost.includes(d.properties.name)) {
 		choropleth
 			.selectAll("path")
 			.filter(function (c) {
