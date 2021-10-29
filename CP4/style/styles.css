@@ -3,3 +3,21 @@ div {
     float: left;
 }
 
+#women{
+    background-color: palevioletred;
+    border-radius: 10px;
+    top : 505px;
+    left: 10px;
+    margin-left: 50px;
+    font-;
+    position: absolute;
+}
+
+#general{
+    background-color: brown;
+    border-radius: 10px;
+    top : 505px;
+    left: 70px;
+    margin-left: 50px;
+    position: absolute;
+}

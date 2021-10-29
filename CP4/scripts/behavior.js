@@ -2,12 +2,23 @@ var map = "/data/countries50.json"
 var stats = "/data/withcont_0.js"
 var topology;
 var selectedCountries = [];
+var selectedCountriesNotHost = [];
 var selectedGroup = "General";
+var countriesHost = [];
+var countriesNotHost = [];
 function init() {
 	Promise.all([d3.json(map), d3.json("data/newjson_0.js"), d3.json(stats)]).then(function ([map, data, stats]) {
 		topology = map;
 		dataset = data;
 		datastats = stats;
+		dataset.forEach(function (i) {
+			countriesHost.push(i.Country);
+		})
+		datastats.forEach(function (j) {
+			if (!countriesHost.includes(j))
+				countriesNotHost.push(j.Country);
+		})
+
 		createChoroplethMap();
 		createLineChart(data, "General");
 		createClevelandMedalsPerPart(stats);
@@ -99,6 +110,26 @@ function createChoroplethMap() {
 		});
 }
 
+function triggerTransitionDelay() {
+	if (selectedGroup === "General")
+		d3
+			.select(".line")
+			.selectAll("circle")
+			.transition()
+			.duration(3000)
+			.attr("cy", (d) => y(d.ParticipantsEvolution))
+			.style("fill", "#61300d")
+	else {
+		d3
+			.select(".line")
+			.selectAll("circle")
+			.transition()
+			.duration(3000)
+			.attr("cy", (d) => y(d.WomenEvolution))
+			.style("fill", "#ff1493")
+	}
+}
+
 function createLineChart(data, group) {
 	width = 900;
 
@@ -174,11 +205,11 @@ function createLineChart(data, group) {
 		svg
 			.select("path")
 			.datum(data)
-			.attr("fill", "none")
-			.attr("stroke", "#61300d")
-			.attr("stroke-width", 2)
 			.transition()
 			.duration(3000)
+			.attr("stroke", "#61300d")
+			.attr("stroke-width", 2)
+			.attr("fill", "none")
 			.attr("d", line)
 		selectedGroup = "General";
 	}
@@ -186,11 +217,11 @@ function createLineChart(data, group) {
 		svg
 			.select("path")
 			.datum(data)
-			.attr("fill", "none")
-			.attr("stroke", "#ff1493")
-			.attr("stroke-width", 2)
 			.transition()
 			.duration(3000)
+			.attr("stroke-width", 2)
+			.attr("stroke", "#ff1493")
+			.attr("fill", "none")
 			.attr("d", line2)
 		selectedGroup = "Women";
 	}
@@ -404,6 +435,7 @@ function handleMouseLeave(event, d) {
 }
 
 function handleMouseClick(event, d) {
+
 	choropleth = d3.select("div#choropleth").select("svg");
 	linechart = d3.select("div#secondLine").select("svg");
 	if (selectedCountries.includes(d.properties.name)) {
@@ -415,7 +447,8 @@ function handleMouseClick(event, d) {
 				}
 			})
 			.style("stroke-width", 1);
-	} else {
+	} else if (countriesHost.includes(d.properties.name) && !selectedCountries.includes(d.properties.name)) {
+		console.log("ode");
 		choropleth
 			.selectAll("path")
 			.filter(function (c) {
@@ -424,6 +457,32 @@ function handleMouseClick(event, d) {
 				}
 			})
 			.style("stroke-width", 3);
+
+	} else if (countriesNotHost.includes(d.properties.name) && !selectedCountriesNotHost.includes(d.properties.name)) {
+		choropleth
+			.selectAll("path")
+			.filter(function (c) {
+				if (d.properties.name == c.properties.name) {
+					selectedCountriesNotHost.push(d.properties.name)
+					return c;
+				}
+			})
+			.style("stroke-width", 3);
+	} else {
+		choropleth
+			.selectAll("path")
+			.filter(function (c) {
+				if (d.properties.name == c.properties.name) {
+					var newlist1 = [];
+					newlist1.push(d.properties.name);
+
+					selectedCountriesNotHost = selectedCountriesNotHost.filter(function (el) {
+						return !newlist1.includes(el);
+					});
+					return c;
+				}
+			})
+			.style("stroke-width", 1);
 	}
 
 
@@ -526,10 +585,12 @@ function update(selectedGroup) {
 		case "General":
 			createLineChart(dataset, "General");
 			selectedGroup = "General";
+			triggerTransitionDelay();
 			break;
 		case "Women":
 			createLineChart(dataset, "Women");
 			selectedGroup = "Women";
+			triggerTransitionDelay();
 			break;
 	}
 }
