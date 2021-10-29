@@ -13,8 +13,29 @@ function init() {
 		createClevelandMedalsPerPart(stats);
 		createClevelandMedalsPerGender(stats);
 		createProgressBar(stats);
+		createListCountries();
 		addZoom();
 	});
+}
+
+function createListCountries() {
+
+	var countries = [];
+	datastats.forEach(function (i) {
+		countries.push(i.NOC);
+	})
+	// Initialize the button
+	var dropdownButton = d3.select("#progressBar")
+		.append('select')
+
+	// add the options to the button
+	dropdownButton // Add a button
+		.selectAll('myOptions') // Next 4 lines add 6 options = 6 colors
+		.data(countries)
+		.enter()
+		.append('option')
+		.text(function (d) { return d; }) // text showed in the menu
+		.attr("value", function (d) { return d; })
 }
 
 function createChoroplethMap() {
@@ -385,79 +406,63 @@ function handleMouseLeave(event, d) {
 function handleMouseClick(event, d) {
 	choropleth = d3.select("div#choropleth").select("svg");
 	linechart = d3.select("div#secondLine").select("svg");
-	if(selectedCountries.includes(d.properties.name)){
-	choropleth
-		.selectAll("path")
-		.filter(function (c) {
-			if (d.properties.name == c.properties.name) {
-				return c;
-			}
-		})
-		.style("stroke-width", 1);
-} else {
-	choropleth
-		.selectAll("path")
-		.filter(function (c) {
-			if (d.properties.name == c.properties.name) {
-				return c;
-			}
-		})
-		.style("stroke-width", 3);
-}
+	if (selectedCountries.includes(d.properties.name)) {
+		choropleth
+			.selectAll("path")
+			.filter(function (c) {
+				if (d.properties.name == c.properties.name) {
+					return c;
+				}
+			})
+			.style("stroke-width", 1);
+	} else {
+		choropleth
+			.selectAll("path")
+			.filter(function (c) {
+				if (d.properties.name == c.properties.name) {
+					return c;
+				}
+			})
+			.style("stroke-width", 3);
+	}
 
-	
+
 
 	if (selectedCountries.includes(d.properties.name)) {
 		for (i = 0; i < selectedCountries.length; i++) {
 			if (selectedCountries[i] === d.properties.name) {
-				console.log(d.properties.name);
-				console.log(selectedCountries);	
 
 				var newlist = [];
 				newlist.push(d.properties.name);
 
-				selectedCountries = selectedCountries.filter( function( el ) {
-  				return !newlist.includes( el );
-				} );
+				selectedCountries = selectedCountries.filter(function (el) {
+					return !newlist.includes(el);
+				});
 
 				//newlist = selectedCountries.remove(i);
-
-				console.log(selectedCountries);
 			}
 		}
-	} else{
+	} else {
+		dataset1 = dataset.filter(function (c) {
+			if (d.properties.name === c.Country) {
+				if (!selectedCountries.includes(d.properties.name)) {
+					selectedCountries.push(d.properties.name);
+					return d.properties.name;
+				}
 
-	console.log(selectedCountries);
-	console.log("aqui");
-	console.log(selectedCountries.includes(d.properties.name));
-
-
-	dataset1 = dataset.filter(function (c) {
-		if (d.properties.name === c.Country) {
-			if(!selectedCountries.includes(d.properties.name)){
-				console.log("oi" + d.properties.name);
+			} else if (selectedCountries.includes(c.Country)) {
 				selectedCountries.push(d.properties.name);
 				return d.properties.name;
 			}
-			
-		} else if(selectedCountries.includes(c.Country)){
-			selectedCountries.push(d.properties.name);
-			return d.properties.name;
-		}
-	})
-	
+		})
+
 	}
 
-	console.log("coisas");
-
-	dataset1 = dataset.filter(function (c){
-		if(selectedCountries.includes(c.Country)){
+	dataset1 = dataset.filter(function (c) {
+		if (selectedCountries.includes(c.Country)) {
 			return c.Country;
 		}
 	});
-
-		console.log(dataset1);
-
 
 	if (selectedGroup == "General") {
 		linechart
@@ -486,32 +491,28 @@ function handleMouseClick(event, d) {
 				});
 	}
 	else {
-		console.log("aqui");
 		linechart
-			.selectAll(".line2")
+			.selectAll(".line")
 			.selectAll("circle")
 			.data(dataset1, function (i) {
-				console.log("aqui feito parvo");
 				return i.Year;
 			})
 			.join(
 				(enter) => {
-					console.log("enter");
 					return enter
 						.append("circle")
 						.attr("cx", (d) => x(d.Year))
 						.attr("cy", (d) => y(d.WomenEvolution))
 						.attr("r", 5)
-						.style("fill", "blue")
+						.style("fill", "#ff1493")
 				},
 				(update) => {
-					console.log("update");
 					update
 						.append("circle")
 						.attr("cx", (d) => x(d.Year))
 						.attr("cy", (d) => y(d.WomenEvolution))
 						.attr("r", 5)
-						.style("fill", "blue")
+						.style("fill", "#ff1493")
 				},
 				(exit) => {
 					exit.remove();
