@@ -23,8 +23,8 @@ function init() {
 		createLineChart(data, "General");
 		createClevelandMedalsPerPart(stats);
 		createClevelandMedalsPerGender(stats);
-		createProgressBar(stats);
 		createListCountries();
+		createProgressBar(stats);
 		addZoom();
 	});
 }
@@ -50,14 +50,14 @@ function createListCountries() {
 }
 
 function createChoroplethMap() {
-	var width = 1000;
-	var height = 400;
+	var width = window.innerWidth*0.505;
+	var height = window.innerHeight/2;
 	var projection = d3
 		.geoMercator()
-		.scale(height / 3)
+		.scale(height / 2.9)
 		.rotate([0, 0])
-		.center([0, 20])
-		.translate([width / 2, height / 2]);
+		.center([0, 0])
+		.translate([width / 2, height / 1.5]);
 
 	var path = d3.geoPath().projection(projection);
 
@@ -131,9 +131,9 @@ function triggerTransitionDelay() {
 }
 
 function createLineChart(data, group) {
-	width = 900;
+	width = window.innerWidth/2.1;
 
-	height = 400;
+	height = window.innerHeight/2.3;
 
 	margin = { top: 20, right: 40, bottom: 20, left: 40 };
 
@@ -228,9 +228,9 @@ function createLineChart(data, group) {
 }
 
 function createClevelandMedalsPerPart(stats) {
-	const margin = { top: 10, right: 30, bottom: 30, left: 30 },
-		width = 460 - margin.left - margin.right,
-		height = 1000;
+	const margin = { top: 10, right: 30, bottom: 30, left: 40 },
+		width = window.innerWidth/4.5 - margin.left - margin.right,
+		height = window.innerHeight/2.60;
 
 	/* var sumMedals = 0;
 	var sumPartic = 0
@@ -247,7 +247,7 @@ function createClevelandMedalsPerPart(stats) {
 	});
  */
 
-	const svg = d3.select("#clevelandMedalsPart")
+	const svg = d3.select("#clevelandMedalsP")
 
 		.append("svg")
 		.attr("width", width + margin.left + margin.right)
@@ -306,11 +306,11 @@ function createClevelandMedalsPerPart(stats) {
 }
 
 function createClevelandMedalsPerGender(stats) {
-	const margin = { top: 10, right: 30, bottom: 30, left: 30 },
-		width = 460 - margin.left - margin.right,
-		height = 1000;
+	const margin = { top: 10, right: 30, bottom: 30, left: 40 },
+	width = window.innerWidth/4.5 - margin.left - margin.right,
+	height = window.innerHeight/2.60;
 
-	const svg = d3.select("#clevelandMedalsPart")
+	const svg = d3.select("#clevelandMedalsG")
 		.append("svg")
 		.attr("width", width + margin.left + margin.right)
 		.attr("height", height + margin.top + margin.bottom)
@@ -362,8 +362,8 @@ function createClevelandMedalsPerGender(stats) {
 }
 
 function createProgressBar(stats) {
-	const width = 450;
-	height = 450;
+	const width = window.innerWidth*0.48;
+	height = window.innerHeight/2;
 
 	const radius = 50;
 
@@ -382,6 +382,17 @@ function createProgressBar(stats) {
 
 	const data_ready = pie([['pais', 70], ['', 30]])
 
+	svg.append("rect")
+		.attr("x", -width/2.14)
+		.attr("y", -height/2.2)
+		.attr("height", height/1.1)
+		.attr("width", width/1.07)
+		.attr("rx", 20)
+		//.style("stroke-dasharray", ("10,3"))
+		.style("stroke-width", 2)
+		.style("stroke", "#3e5f85")
+		.style("fill", "#ffffff");
+
 	svg
 		.selectAll('whatever')
 		.data(data_ready)
@@ -392,6 +403,8 @@ function createProgressBar(stats) {
 		)
 		.attr('fill', "#ff1493")
 		.style("opacity", d => opacity(d.data[0]))
+		.style("stroke", "#b94366")
+		.style("stroke-width", 3)
 
 	svg.append("text")
 		.attr("text-anchor", "middle")

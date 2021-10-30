@@ -1,6 +1,50 @@
 div {
-    width: 50%;
+    width: 49%;
+    height: 50%;
     float: left;
+}
+div#choropleth{
+    width: 51%;
+    background-color: white;
+    border-style: solid; /*ver outset tmb*/
+    border-color: #3e5f85;
+    border-width: 2px;
+    border-radius:20px; 
+}
+div#progressBar{
+    width: 48%;
+}
+div#secondLine{
+    background-color: white;
+    border-style: solid;
+    border-color: #3e5f85;
+    border-width: 2px;
+    border-radius:20px; 
+    margin-right: 10px;
+}
+div#clevelandMedalsG{
+    width: 24%;
+    background-color: white;
+    border-style: solid;
+    border-color: #3e5f85;
+    border-width: 2px;
+    border-radius:20px; 
+    margin-right: 7px;
+}
+
+div#clevelandMedalsP{
+    width: 24%;
+    background-color: white;
+    border-style: solid;
+    border-color: #3e5f85;
+    border-width: 2px;
+    /*box-shadow: 3px 3px 5px 5px #aaaaaa;*/
+    border-radius:20px;
+    margin-right: 10px;
+    box-sizing: border-box;
+}
+body{
+    background-image: linear-gradient(#7291ba, #a8c7f2);
 }
 
 #women{
@@ -9,7 +53,6 @@ div {
     top : 505px;
     left: 10px;
     margin-left: 50px;
-    font-;
     position: absolute;
 }
 
