@@ -8,7 +8,7 @@
 {"WomenEvolution":404,"Year":1928,"AvgHost":23.0,"ParticipantsEvolution":4992,"NOC_host":"NED","MedalAverage":34,"MedalsHost":57,"Country":"Netherlands"},
 {"WomenEvolution":347,"Year":1932,"AvgHost":120.5,"ParticipantsEvolution":2969,"NOC_host":"USA","MedalAverage":178,"MedalsHost":189,"Country":"United States of America"},
 {"WomenEvolution":468,"Year":1936,"AvgHost":136.0,"ParticipantsEvolution":6506,"NOC_host":"GER","MedalAverage":88,"MedalsHost":224,"Country":"Germany"},
-{"WomenEvolution":628,"Year":1948,"AvgHost":117.0,"ParticipantsEvolution":6405,"NOC_host":"GBR","MedalAverage":68,"MedalsHost":61,"Country":"United Kindgom"},
+{"WomenEvolution":628,"Year":1948,"AvgHost":117.0,"ParticipantsEvolution":6405,"NOC_host":"GBR","MedalAverage":68,"MedalsHost":61,"Country":"United Kingdom"},
 {"WomenEvolution":1497,"Year":1952,"AvgHost":22.0,"ParticipantsEvolution":8270,"NOC_host":"FIN","MedalAverage":18,"MedalsHost":40,"Country":"Finland"},
 {"WomenEvolution":893,"Year":1956,"AvgHost":77.0,"ParticipantsEvolution":5127,"NOC_host":"AUS","MedalAverage":48,"MedalsHost":67,"Country":"Austria"},
 {"WomenEvolution":1435,"Year":1960,"AvgHost":39.0,"ParticipantsEvolution":8119,"NOC_host":"ITA","MedalAverage":49,"MedalsHost":88,"Country":"Italy"},
