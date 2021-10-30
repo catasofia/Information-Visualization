@@ -20,7 +20,7 @@ function init() {
 		})
 
 		createChoroplethMap();
-		createLineChart(data, "General");
+		createLineChart(data, "General", 1);
 		createClevelandMedalsPerPart(stats);
 		createClevelandMedalsPerGender(stats);
 		createListCountries();
@@ -51,7 +51,7 @@ function createListCountries() {
 
 function createChoroplethMap() {
 	var width = window.innerWidth * 0.52;
-	var height = window.innerHeight *0.46;
+	var height = window.innerHeight * 0.46;
 	var projection = d3
 		.geoMercator()
 		.scale(width / 6)
@@ -100,11 +100,16 @@ function createChoroplethMap() {
 			for (const x of dataset) {
 				var output = "Country: " + d.properties.name;
 				if (!countries.includes(d.properties.name)) {
-					return output;
+					return output + "\nThis country was never host";
 				}
 				if (d.properties.name === x.Country) {
+					years = [];
+					for (const i of dataset) {
+						if (i.Country == x.Country)
+							years.push(i.Year);
+					}
 					var difference = x.MedalsHost - x.MedalAverage;
-					return output + "\nDifference of Medals: " + difference + "\nHost in years: " + x.Year;
+					return output + "\nDifference of Medals: " + difference + "\nHost in years: " + years;
 				}
 			}
 		});
@@ -141,12 +146,12 @@ function triggerTransitionDelay() {
 	}
 }
 
-function createLineChart(data, group) {
+function createLineChart(data, group, value) {
 	width = window.innerWidth / 2.1;
 
-	height = window.innerHeight * 0.35;
+	height = window.innerHeight * 0.36;
 
-	margin = { top: 20, right: 40, bottom: 30, left: 40 };
+	margin = { top: 20, right: 40, bottom: 31, left: 50 };
 
 	line = d3
 		.line()
@@ -204,12 +209,32 @@ function createLineChart(data, group) {
 		.select("svg")
 		.attr("width", width)
 		.attr("height", height)
-		
+
 	svg.append("g").attr("class", "lineXAxis");
 	svg.append("g").attr("class", "lineYAxis");
-	
+
 	svg.select("g.lineXAxis").call(xAxis);
 	svg.select("g.lineYAxis").call(yAxis);
+
+	svg
+		.append("text")
+		.attr("transform", "rotate(-90)")
+		.attr("y", margin.left - 50)
+		.attr("x", 0 - height / 10)
+		.attr("dy", "1em")
+		.attr("text-anchor", "end")
+		.style("font-size", "10px")
+		.style("text-color", "black")
+		.text("Nr of participants");
+
+	svg.append("text")
+		.style("font-size", "10px")
+		.attr("class", "x label")
+		.attr("text-anchor", "end")
+		.attr("x", width - 40)
+		.attr("y", height - 2)
+		.text("Year");
+
 
 	if (group === "General") {
 		svg
@@ -319,11 +344,11 @@ function createLineChart(data, group) {
 			);
 
 	}
-	
+
 }
 
 function createClevelandMedalsPerPart(stats) {
-	const margin = { top: 10, right: 30, bottom: 30, left: 40 },
+	const margin = { top: 28, right: 30, bottom: 30, left: 40 },
 		width = window.innerWidth / 4.5 - margin.left - margin.right,
 		height = window.innerHeight * 0.298;
 
@@ -357,7 +382,7 @@ function createClevelandMedalsPerPart(stats) {
 	svg.append("g")
 		.attr("transform", `translate(0, ${height})`)
 		.call(d3.axisBottom(x))
-		
+
 
 	const y = d3.scaleBand()
 		.range([0, height])
@@ -399,27 +424,27 @@ function createClevelandMedalsPerPart(stats) {
 		.text(function (d) {
 			return d.Participants;
 		});
-	
-	svg.append("text")
-	.style("font-size", "9px")
-    .attr("class", "x label")
-    .attr("text-anchor", "end")
-    .attr("x", width)
-    .attr("y", height + 25)
-    .text("Nr of participants");
 
 	svg.append("text")
-	.style("font-size", "9px")
-	.attr("class", "y label")
-    .attr("text-anchor", "end")
-    .attr("y", -40)
-    .attr("dy", ".75em")
-    .attr("transform", "rotate(-90)")
-    .text("NOC");
+		.style("font-size", "10px")
+		.attr("class", "x label")
+		.attr("text-anchor", "end")
+		.attr("x", width)
+		.attr("y", height + 28)
+		.text("Nr of participants");
+
+	svg.append("text")
+		.style("font-size", "10px")
+		.attr("class", "y label")
+		.attr("text-anchor", "end")
+		.attr("y", -40)
+		.attr("dy", ".75em")
+		.attr("transform", "rotate(-90)")
+		.text("NOC");
 }
 
 function createClevelandMedalsPerGender(stats) {
-	const margin = { top: 10, right: 30, bottom: 30, left: 40 },
+	const margin = { top: 28, right: 30, bottom: 30, left: 40 },
 		width = window.innerWidth / 4.5 - margin.left - margin.right,
 		height = window.innerHeight * 0.298;
 
@@ -472,28 +497,28 @@ function createClevelandMedalsPerGender(stats) {
 		.attr("r", "6")
 		.style("fill", "#6c9dc4")
 		.append("title")
-	
-		svg.append("text")
-		.style("font-size", "9px")
+
+	svg.append("text")
+		.style("font-size", "10px")
 		.attr("class", "x label")
 		.attr("text-anchor", "end")
 		.attr("x", width)
-		.attr("y", height + 25)
+		.attr("y", height + 28)
 		.text("Nr of participants");
 
-		svg.append("text")
-		.style("font-size", "9px")
+	svg.append("text")
+		.style("font-size", "10px")
 		.attr("class", "y label")
-    	.attr("text-anchor", "end")
-    	.attr("y", -40)
-    	.attr("dy", ".75em")
-    	.attr("transform", "rotate(-90)")
-    	.text("NOC");
+		.attr("text-anchor", "end")
+		.attr("y", -40)
+		.attr("dy", ".75em")
+		.attr("transform", "rotate(-90)")
+		.text("NOC");
 }
 
 function createProgressBar(stats) {
 	const width = window.innerWidth * 0.445;
-	height = window.innerHeight* 0.374;
+	height = window.innerHeight * 0.383;
 
 	const radius = 50;
 
