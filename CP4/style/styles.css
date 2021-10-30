@@ -4,15 +4,33 @@ div {
     float: left;
 }
 div#choropleth{
-    width: 51%;
+    width: 53%;
     background-color: white;
-    border-style: solid; /*ver outset tmb*/
+    border-style: solid; 
     border-color: #3e5f85;
     border-width: 2px;
     border-radius:20px; 
+    margin-right: 10px;
+    margin-left: 10px;
+    font-size: 15px;
+    text-shadow: 0px 0px;
+    margin-bottom: 10px;
 }
 div#progressBar{
-    width: 48%;
+    width: 44.5%;
+    height: 41%;
+    background-color: white;
+    border-style: solid; 
+    border-color: #3e5f85;
+    border-width: 2px;
+    border-radius:20px; 
+    color: #3e5f85;
+    font-family: Arial, Helvetica, sans-serif;
+    font-weight: bold;
+    text-align: center;
+    font-size: 15px;
+    text-shadow: 0px 0px;
+    margin-bottom: 10px;
 }
 div#secondLine{
     background-color: white;
@@ -21,6 +39,13 @@ div#secondLine{
     border-width: 2px;
     border-radius:20px; 
     margin-right: 10px;
+    margin-left: 10px;
+    color: #3e5f85;
+    font-family: Arial, Helvetica, sans-serif;
+    font-weight: bold;
+    font-size: 15px;
+    text-shadow: 0px 0px;
+    text-align: center;
 }
 div#clevelandMedalsG{
     width: 24%;
@@ -30,6 +55,12 @@ div#clevelandMedalsG{
     border-width: 2px;
     border-radius:20px; 
     margin-right: 7px;
+    color: #3e5f85;
+    font-family: Arial, Helvetica, sans-serif;
+    font-weight: bold;
+    font-size: 15px;
+    text-shadow: 0px 0px;
+    text-align: center;
 }
 
 div#clevelandMedalsP{
@@ -38,17 +69,29 @@ div#clevelandMedalsP{
     border-style: solid;
     border-color: #3e5f85;
     border-width: 2px;
-    /*box-shadow: 3px 3px 5px 5px #aaaaaa;*/
     border-radius:20px;
     margin-right: 10px;
     box-sizing: border-box;
+    color: #3e5f85;
+    font-family: Arial, Helvetica, sans-serif;
+    font-weight: bold;
+    font-size: 15px;
+    text-shadow: 0px 0px;
+    text-align: center;
 }
 body{
     background-image: linear-gradient(#7291ba, #a8c7f2);
+    color: white;
+    font-family: monospace;
+    text-align: center;
+    font-size: 20px;
+    text-shadow: 2px 2px #3e5f85;
+    margin-top: 3px;
 }
 
 #women{
-    background-color: palevioletred;
+    background-color: #ff1493;
+    color: white;
     border-radius: 10px;
     top : 505px;
     left: 10px;
@@ -57,7 +100,8 @@ body{
 }
 
 #general{
-    background-color: brown;
+    background-color: #444444;
+    color: white;
     border-radius: 10px;
     top : 505px;
     left: 70px;

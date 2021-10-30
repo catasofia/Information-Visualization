@@ -50,14 +50,14 @@ function createListCountries() {
 }
 
 function createChoroplethMap() {
-	var width = window.innerWidth * 0.505;
-	var height = window.innerHeight / 2;
+	var width = window.innerWidth * 0.52;
+	var height = window.innerHeight *0.46;
 	var projection = d3
 		.geoMercator()
-		.scale(height / 2.9)
+		.scale(width / 6)
 		.rotate([0, 0])
-		.center([0, 0])
-		.translate([width / 2, height / 1.5]);
+		.center([0, 5])
+		.translate([width / 2, height / 1.3]);
 
 	var path = d3.geoPath().projection(projection);
 
@@ -80,8 +80,8 @@ function createChoroplethMap() {
 				if (!countries.includes(d.properties.name))
 					return "#cccccc";
 				if (d.properties.name === x.Country) {
-					if ((x.MedalsHost - x.MedalAverage) < 0) return "#f62217";
-					return d3.interpolateRgb("white", "green")((x.MedalsHost - x.MedalAverage) / 200);
+					if ((x.MedalsHost - x.MedalAverage) < 0) return "#f5918c";
+					return d3.interpolateRgb("white", "#3e5f85")((x.MedalsHost - x.MedalAverage) / 200);
 				}
 			}
 		}))
@@ -121,7 +121,7 @@ function triggerTransitionDelay() {
 			.style("fill", function (d) {
 				if (!selectedCountries.includes(d.Country))
 					return "#444444";
-				else return "#64dd17";
+				else return "#6c9dc4";
 			})
 	}
 	else {
@@ -136,7 +136,7 @@ function triggerTransitionDelay() {
 				if (!selectedCountries.includes(d.Country))
 					return "#ff1493";
 				else
-					return "#64dd17";
+					return "#6c9dc4";
 			})
 	}
 }
@@ -144,9 +144,9 @@ function triggerTransitionDelay() {
 function createLineChart(data, group) {
 	width = window.innerWidth / 2.1;
 
-	height = window.innerHeight / 2.3;
+	height = window.innerHeight * 0.35;
 
-	margin = { top: 20, right: 40, bottom: 20, left: 40 };
+	margin = { top: 20, right: 40, bottom: 30, left: 40 };
 
 	line = d3
 		.line()
@@ -203,12 +203,11 @@ function createLineChart(data, group) {
 		.select("div#secondLine")
 		.select("svg")
 		.attr("width", width)
-		.attr("height", height);
-
+		.attr("height", height)
+		
 	svg.append("g").attr("class", "lineXAxis");
 	svg.append("g").attr("class", "lineYAxis");
-
-
+	
 	svg.select("g.lineXAxis").call(xAxis);
 	svg.select("g.lineYAxis").call(yAxis);
 
@@ -239,7 +238,7 @@ function createLineChart(data, group) {
 						.attr("r", 5)
 						.style("fill", function (d) {
 							if (selectedCountries.includes(d.Country))
-								return "#64dd17";
+								return "#6c9dc4";
 							else return "#444444";
 						})
 						.on("click", handleClickLine)
@@ -257,7 +256,7 @@ function createLineChart(data, group) {
 						.attr("r", 5)
 						.style("fill", function (d) {
 							if (selectedCountries.includes(d.Country))
-								return "#64dd17";
+								return "#6c9dc4";
 							else return "#444444";
 						})
 				},
@@ -296,7 +295,7 @@ function createLineChart(data, group) {
 						.attr("r", 5)
 						.style("fill", function (d) {
 							if (selectedCountries.includes(d.Country))
-								return "#64dd17";
+								return "#6c9dc4";
 							else return "#ff1493";
 						})
 						.on("click", handleClickLine)
@@ -310,7 +309,7 @@ function createLineChart(data, group) {
 						.attr("r", 5)
 						.style("fill", function (d) {
 							if (selectedCountries.includes(d.Country))
-								return "#64dd17";
+								return "#6c9dc4";
 							else return "#ff1493";
 						})
 				},
@@ -320,12 +319,13 @@ function createLineChart(data, group) {
 			);
 
 	}
+	
 }
 
 function createClevelandMedalsPerPart(stats) {
 	const margin = { top: 10, right: 30, bottom: 30, left: 40 },
 		width = window.innerWidth / 4.5 - margin.left - margin.right,
-		height = window.innerHeight / 2.60;
+		height = window.innerHeight * 0.298;
 
 	/* var sumMedals = 0;
 	var sumPartic = 0
@@ -357,6 +357,7 @@ function createClevelandMedalsPerPart(stats) {
 	svg.append("g")
 		.attr("transform", `translate(0, ${height})`)
 		.call(d3.axisBottom(x))
+		
 
 	const y = d3.scaleBand()
 		.range([0, height])
@@ -381,7 +382,7 @@ function createClevelandMedalsPerPart(stats) {
 		.attr("cx", function (d) { return x(d.NrMedals); })
 		.attr("cy", function (d) { return y(d.NOC); })
 		.attr("r", "6")
-		.style("fill", "brown")
+		.style("fill", "#6c9dc4")
 		.append("title")
 		.text(function (d) {
 			return d.NrMedals;
@@ -393,17 +394,34 @@ function createClevelandMedalsPerPart(stats) {
 		.attr("cx", function (d) { return x(d.Participants); })
 		.attr("cy", function (d) { return y(d.NOC); })
 		.attr("r", "6")
-		.style("fill", "yellow")
+		.style("fill", "#444444")
 		.append("title")
 		.text(function (d) {
 			return d.Participants;
 		});
+	
+	svg.append("text")
+	.style("font-size", "9px")
+    .attr("class", "x label")
+    .attr("text-anchor", "end")
+    .attr("x", width)
+    .attr("y", height + 25)
+    .text("Nr of participants");
+
+	svg.append("text")
+	.style("font-size", "9px")
+	.attr("class", "y label")
+    .attr("text-anchor", "end")
+    .attr("y", -40)
+    .attr("dy", ".75em")
+    .attr("transform", "rotate(-90)")
+    .text("NOC");
 }
 
 function createClevelandMedalsPerGender(stats) {
 	const margin = { top: 10, right: 30, bottom: 30, left: 40 },
 		width = window.innerWidth / 4.5 - margin.left - margin.right,
-		height = window.innerHeight / 2.60;
+		height = window.innerHeight * 0.298;
 
 	const svg = d3.select("#clevelandMedalsG")
 		.append("svg")
@@ -452,13 +470,30 @@ function createClevelandMedalsPerGender(stats) {
 		.attr("cx", function (d) { return x(d.PercMenMedalists); })
 		.attr("cy", function (d) { return y(d.NOC); })
 		.attr("r", "6")
-		.style("fill", "blue")
+		.style("fill", "#6c9dc4")
 		.append("title")
+	
+		svg.append("text")
+		.style("font-size", "9px")
+		.attr("class", "x label")
+		.attr("text-anchor", "end")
+		.attr("x", width)
+		.attr("y", height + 25)
+		.text("Nr of participants");
+
+		svg.append("text")
+		.style("font-size", "9px")
+		.attr("class", "y label")
+    	.attr("text-anchor", "end")
+    	.attr("y", -40)
+    	.attr("dy", ".75em")
+    	.attr("transform", "rotate(-90)")
+    	.text("NOC");
 }
 
 function createProgressBar(stats) {
-	const width = window.innerWidth * 0.48;
-	height = window.innerHeight / 2;
+	const width = window.innerWidth * 0.445;
+	height = window.innerHeight* 0.374;
 
 	const radius = 50;
 
@@ -476,17 +511,6 @@ function createProgressBar(stats) {
 		.range([1, 0])
 
 	const data_ready = pie([['pais', 70], ['', 30]])
-
-	svg.append("rect")
-		.attr("x", -width / 2.14)
-		.attr("y", -height / 2.2)
-		.attr("height", height / 1.1)
-		.attr("width", width / 1.07)
-		.attr("rx", 20)
-		//.style("stroke-dasharray", ("10,3"))
-		.style("stroke-width", 2)
-		.style("stroke", "#3e5f85")
-		.style("fill", "#ffffff");
 
 	svg
 		.selectAll('whatever')
@@ -533,7 +557,7 @@ function handleMouseLeave(event, d) {
 		.selectAll("path")
 		.transition()
 		.duration(200)
-		.style("opacity", 0.8)
+		.style("opacity", 1)
 		.filter(function (c) {
 			if (d.id == c.id) return c;
 		})
@@ -555,7 +579,7 @@ function handleMouseClick(event, d) {
 						return b;
 					}
 				})
-				.style("fill", "#64dd17");
+				.style("fill", "#6c9dc4");
 		}
 
 		else {
@@ -568,7 +592,7 @@ function handleMouseClick(event, d) {
 				})
 				.style("fill", function (d) {
 					if (selectedCountries.includes(d))
-						return "#64dd17";
+						return "#6c9dc4";
 					else return "#ff1493";
 
 				})
@@ -583,7 +607,7 @@ function handleMouseClick(event, d) {
 						return b;
 					}
 				})
-				.style("fill", "#64dd17");
+				.style("fill", "#6c9dc4");
 		}
 
 		else {
@@ -596,7 +620,7 @@ function handleMouseClick(event, d) {
 				})
 				.style("fill", function (d) {
 					if (selectedCountries.includes(d))
-						return "#64dd17";
+						return "#6c9dc4";
 					else return "#444444";
 
 				})
@@ -856,7 +880,7 @@ function handleClickLine(event, d) {
 						.attr("r", 5)
 						.style("fill", function (d) {
 							if (selectedCountries.includes(d.Country))
-								return "#64dd17";
+								return "#6c9dc4";
 							else return "blue";
 						})
 				},
@@ -890,7 +914,7 @@ function handleClickLine(event, d) {
 						.attr("r", 5)
 						.style("fill", function (d) {
 							if (selectedCountries.includes(d.Country))
-								return "#64dd17";
+								return "#6c9dc4";
 							else return "blue";
 						})
 				},
@@ -902,7 +926,7 @@ function handleClickLine(event, d) {
 						.attr("r", 5)
 						.style("fill", function (d) {
 							if (selectedCountries.includes(d.Country))
-								return "#64dd17";
+								return "#6c9dc4";
 							else return "blue";
 						})
 				},
