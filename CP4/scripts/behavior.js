@@ -6,6 +6,8 @@ var selectedCountriesNotHost = [];
 var selectedGroup = "General";
 var countriesHost = [];
 var countriesNotHost = [];
+var keys = [0, 0.2, 0.4, 0.6, 0.8]
+
 function init() {
 	Promise.all([d3.json(map), d3.json("data/newjson_0.js"), d3.json(stats)]).then(function ([map, data, stats]) {
 		topology = map;
@@ -56,16 +58,17 @@ function createChoroplethMap() {
 		.geoMercator()
 		.scale(width / 6)
 		.rotate([0, 0])
-		.center([0, 5])
+		.center([0, 0])
 		.translate([width / 2, height / 1.3]);
 
 	var path = d3.geoPath().projection(projection);
 
-	d3.select("#choropleth")
+	const svg = d3.select("#choropleth")
 		.append("svg")
 		.attr("width", width)
 		.attr("height", height)
-		.selectAll("path")
+
+	svg.selectAll("path")
 		.data(topojson.feature(topology, topology.objects.countries).features)
 		.join("path")
 		.attr("class", "country")
@@ -113,6 +116,126 @@ function createChoroplethMap() {
 				}
 			}
 		});
+
+	svg.append('rect')
+		.attr('x', 20)
+		.attr('y', 225)
+		.attr('width', 20)
+		.attr('height', 20)
+		.attr('stroke', '#333333')
+		.attr('fill', '#f5918c');
+	svg.append('text')
+		.attr('x', 45)
+		.attr('y', 238)
+		.attr('stroke', '#333333')
+		.style("font-size", "13px")
+		.style("font-family", "sans-serif")
+		.text("<0")
+
+	svg.append('rect')
+		.attr('x', 20)
+		.attr('y', 247)
+		.attr('width', 20)
+		.attr('height', 20)
+		.attr('stroke', "#333333")
+		.attr('fill', d3.interpolateRgb("white", "#3e5f85")(15 / 200));
+	svg.append('text')
+		.attr('x', 45)
+		.attr('y', 262)
+		.attr('stroke', '#333333')
+		.style("font-size", "13px")
+		.style("font-family", "sans-serif")
+		.text("5-29")
+
+	svg.append('rect')
+		.attr('x', 20)
+		.attr('y', 269)
+		.attr('width', 20)
+		.attr('height', 20)
+		.attr('stroke', "#333333")
+		.attr('fill', d3.interpolateRgb("white", "#3e5f85")(45 / 200));
+	svg.append('text')
+		.attr('x', 45)
+		.attr('y', 285)
+		.attr('stroke', '#333333')
+		.style("font-size", "13px")
+		.style("font-family", "sans-serif")
+		.text("30-60")
+
+	svg.append('rect')
+		.attr('x', 20)
+		.attr('y', 291)
+		.attr('width', 20)
+		.attr('height', 20)
+		.attr('stroke', "#333333")
+		.attr('fill', d3.interpolateRgb("white", "#3e5f85")(80 / 200));
+	svg.append('text')
+		.attr('x', 45)
+		.attr('y', 305)
+		.attr('stroke', '#333333')
+		.style("font-size", "13px")
+		.style("font-family", "sans-serif")
+		.text("61-100")
+
+	svg.append('rect')
+		.attr('x', 20)
+		.attr('y', 313)
+		.attr('width', 20)
+		.attr('height', 20)
+		.attr('stroke', "#333333")
+		.attr('fill', d3.interpolateRgb("white", "#3e5f85")(135 / 200));
+	svg.append('text')
+		.attr('x', 45)
+		.attr('y', 327)
+		.attr('stroke', '#333333')
+		.style("font-size", "13px")
+		.style("font-family", "sans-serif")
+		.text("101-151")
+
+	svg.append('rect')
+		.attr('x', 20)
+		.attr('y', 335)
+		.attr('width', 20)
+		.attr('height', 20)
+		.attr('stroke', "#333333")
+		.attr('fill', d3.interpolateRgb("white", "#3e5f85")(160 / 200));
+	svg.append('text')
+		.attr('x', 45)
+		.attr('y', 349)
+		.attr('stroke', '#333333')
+		.style("font-size", "13px")
+		.style("font-family", "sans-serif")
+		.text("152-199")
+
+	svg.append('rect')
+		.attr('x', 20)
+		.attr('y', 357)
+		.attr('width', 20)
+		.attr('height', 20)
+		.attr('stroke', "#333333")
+		.attr('fill', d3.interpolateRgb("white", "#3e5f85")(200 / 200));
+	svg.append('text')
+		.attr('x', 45)
+		.attr('y', 371)
+		.attr('stroke', '#333333')
+		.style("font-size", "13px")
+		.style("font-family", "sans-serif")
+		.text("200-250")
+
+	svg.append('rect')
+		.attr('x', 20)
+		.attr('y', 379)
+		.attr('width', 20)
+		.attr('height', 20)
+		.attr('stroke', "#333333")
+		.attr('fill', d3.interpolateRgb("white", "#3e5f85")(300 / 200));
+	svg.append('text')
+		.attr('x', 45)
+		.attr('y', 393)
+		.attr('stroke', '#333333')
+		.style("font-size", "13px")
+		.style("font-family", "sans-serif")
+		.text(">250")
 }
 
 function triggerTransitionDelay() {
@@ -289,8 +412,6 @@ function createLineChart(data, group, value) {
 					exit.remove();
 				}
 			);
-
-
 	}
 	else {
 		svg
@@ -342,9 +463,7 @@ function createLineChart(data, group, value) {
 					exit.remove();
 				}
 			);
-
 	}
-
 }
 
 function createClevelandMedalsPerPart(stats) {
@@ -542,7 +661,7 @@ function createProgressBar(stats) {
 		.data(data_ready)
 		.join('path')
 		.attr('d', d3.arc()
-			.innerRadius(30)         // This is the size of the donut hole
+			.innerRadius(30)         
 			.outerRadius(radius)
 		)
 		.attr('fill', "#ff1493")
@@ -592,7 +711,6 @@ function handleMouseLeave(event, d) {
 }
 
 function handleMouseClick(event, d) {
-
 	choropleth = d3.select("div#choropleth").select("svg");
 	linechart = d3.select("div#secondLine").select("svg");
 	if (selectedGroup === "Women") {
