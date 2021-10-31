@@ -6,7 +6,6 @@ var selectedCountriesNotHost = [];
 var selectedGroup = "General";
 var countriesHost = [];
 var countriesNotHost = [];
-var keys = [0, 0.2, 0.4, 0.6, 0.8]
 
 function init() {
 	Promise.all([d3.json(map), d3.json("data/newjson_0.js"), d3.json(stats)]).then(function ([map, data, stats]) {
