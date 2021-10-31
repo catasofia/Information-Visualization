@@ -21,7 +21,7 @@ function init() {
 		})
 
 		createChoroplethMap();
-		createLineChart(data, "General", 1);
+		createLineChart(data, "General", true);
 		createClevelandMedalsPerPart(stats);
 		createClevelandMedalsPerGender(stats);
 		createListCountries();
@@ -317,14 +317,14 @@ function createLineChart(data, group, value) {
 			.call((g) => g.select(".domain").remove());
 
 
-
-	d3.select("div#secondLine")
-		.append("svg")
-		.append("g")
-		.attr("class", "line")
-		.attr("fill", "#444444")
-		.append("path")
-
+	if (value) {
+		d3.select("div#secondLine")
+			.append("svg")
+			.append("g")
+			.attr("class", "line")
+			.attr("fill", "#444444")
+			.append("path")
+	}
 
 	const svg = d3
 		.select("div#secondLine")
@@ -660,7 +660,7 @@ function createProgressBar(stats) {
 		.data(data_ready)
 		.join('path')
 		.attr('d', d3.arc()
-			.innerRadius(30)         
+			.innerRadius(30)
 			.outerRadius(radius)
 		)
 		.attr('fill', "#ff1493")
@@ -1037,7 +1037,7 @@ function handleClickLine(event, d) {
 					exit.remove();
 				});
 
-		createLineChart(dataset, "General");
+		createLineChart(dataset, "General", false);
 		triggerTransitionDelay();
 	}
 	else {
@@ -1075,7 +1075,7 @@ function handleClickLine(event, d) {
 				(exit) => {
 					exit.remove();
 				});
-		createLineChart(dataset, "Women");
+		createLineChart(dataset, "Women", false);
 		triggerTransitionDelay();
 	}
 }
@@ -1083,12 +1083,12 @@ function handleClickLine(event, d) {
 function update(selectedGroup) {
 	switch (selectedGroup) {
 		case "General":
-			createLineChart(dataset, "General");
+			createLineChart(dataset, "General", false);
 			selectedGroup = "General";
 			triggerTransitionDelay();
 			break;
 		case "Women":
-			createLineChart(dataset, "Women");
+			createLineChart(dataset, "Women", false);
 			selectedGroup = "Women";
 			triggerTransitionDelay();
 			break;
