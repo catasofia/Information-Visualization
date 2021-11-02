@@ -144,7 +144,7 @@ function createChoroplethMap() {
 		.attr('stroke', '#333333')
 		.style("font-size", "13px")
 		.style("font-family", "sans-serif")
-		.text("5-29")
+		.text("0-29")
 
 	svg.append('rect')
 		.attr('x', 20)
@@ -235,6 +235,21 @@ function createChoroplethMap() {
 		.style("font-size", "13px")
 		.style("font-family", "sans-serif")
 		.text(">250")
+
+	svg.append('rect')
+		.attr('x', 20)
+		.attr('y', 401)
+		.attr('width', 20)
+		.attr('height', 20)
+		.attr('stroke', '#333333')
+		.attr('fill', '#cccccc');
+	svg.append('text')
+		.attr('x', 45)
+		.attr('y', 415)
+		.attr('stroke', '#333333')
+		.style("font-size", "13px")
+		.style("font-family", "sans-serif")
+		.text("Never host")
 }
 
 function triggerTransitionDelay() {
@@ -347,6 +362,7 @@ function createLineChart(data, group, value) {
 		.attr("text-anchor", "end")
 		.style("font-size", "10px")
 		.style("text-color", "black")
+		.style("font-family", "sans-serif")
 		.text("Nr of participants");
 
 	svg.append("text")
@@ -355,6 +371,7 @@ function createLineChart(data, group, value) {
 		.attr("text-anchor", "end")
 		.attr("x", width - 40)
 		.attr("y", height - 2)
+		.style("font-family", "sans-serif")
 		.text("Year");
 
 
@@ -549,6 +566,7 @@ function createClevelandMedalsPerPart(stats) {
 		.attr("text-anchor", "end")
 		.attr("x", width)
 		.attr("y", height + 28)
+		.style("font-family", "sans-serif")
 		.text("Nr of participants");
 
 	svg.append("text")
@@ -558,6 +576,7 @@ function createClevelandMedalsPerPart(stats) {
 		.attr("y", -40)
 		.attr("dy", ".75em")
 		.attr("transform", "rotate(-90)")
+		.style("font-family", "sans-serif")
 		.text("NOC");
 }
 
@@ -622,6 +641,7 @@ function createClevelandMedalsPerGender(stats) {
 		.attr("text-anchor", "end")
 		.attr("x", width)
 		.attr("y", height + 28)
+		.style("font-family", "sans-serif")
 		.text("Nr of participants");
 
 	svg.append("text")
@@ -631,6 +651,7 @@ function createClevelandMedalsPerGender(stats) {
 		.attr("y", -40)
 		.attr("dy", ".75em")
 		.attr("transform", "rotate(-90)")
+		.style("font-family", "sans-serif")
 		.text("NOC");
 }
 
@@ -712,6 +733,9 @@ function handleMouseLeave(event, d) {
 function handleMouseClick(event, d) {
 	choropleth = d3.select("div#choropleth").select("svg");
 	linechart = d3.select("div#secondLine").select("svg");
+	choropleth1 = d3.select("div#clevelandMedalsP");
+	choropleth2 = d3.select("div#clevelandMedalsG");
+
 	if (selectedGroup === "Women") {
 		if (!selectedCountries.includes(d.properties.name)) {
 			linechart
