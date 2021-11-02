@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8">
+
+	<meta name="description" content="Boilerplate for Laboratory Exercises">
+	<meta name="author" content="Faculty">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+	<title>Olympics G04</title>
+
+	<!-- Import libraries. -->
+	<script language="JavaScript" type="text/javascript" src="libs/d3.min.js"></script>
+	<!-- <script language="JavaScript" type="text/javascript" src="libs/topojson.v3.min.js"></script> -->
+	<script src="//d3js.org/topojson.v1.min.js"></script>
+	
+
+	<!-- JS -->
+	<script language="JavaScript" type="text/javascript" src="scripts/behavior.js"></script>
+
+	<!-- CSS -->
+	<link rel="stylesheet" href="style/styles.css">
+</head>
+<body onload="init()">
+	<p>The Olympic Games and How Being The Host Affects the Difference of Medalists</p>
+	<button id="women" onclick="update('Women')">Women</button>
+	<button id="general" onclick="update('General')">General</button>
+	<div id="choropleth"></div>
+	<div id="progressBar">
+		<p>Percentage of Women and Men Medalists</p>
+	</div>
+	<div id="secondLine">
+		<p>Evolution of Participants per Year</p>
+	</div>
+	<div id="clevelandMedalsP">
+		<p>Participants and Medalists Difference per NOC</p>
+	</div>
+	<div id="clevelandMedalsG">
+		<p>Medalists Difference per Gender and NOC</p>
+	</div>
+	</div>
+</body>
+
+</html>
