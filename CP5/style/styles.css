@@ -4,7 +4,7 @@ div {
     float: left;
 }
 div#choropleth{
-    width: 53%;
+    width: 60%;
     background-color: white;
     border-style: solid; 
     border-color: #3e5f85;
@@ -18,7 +18,7 @@ div#choropleth{
 }
 
 div#progressBar{
-    width: 44.5%;
+    width: 37.5%;
     height: 41%;
     background-color: white;
     border-style: solid; 

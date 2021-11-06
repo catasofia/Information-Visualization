@@ -1,6 +1,8 @@
 var map = "/data/countries50.json"
 var stats = "/data/withcont_0.js"
+var evolution = "/data/evolution_countries_new.js"
 var topology;
+var dataEvolution;
 var selectedCountries = [];
 var selectedCountriesNotHost = [];
 var selectedGroup = "General";
@@ -8,10 +10,11 @@ var countriesHost = [];
 var countriesNotHost = [];
 
 function init() {
-	Promise.all([d3.json(map), d3.json("data/newjson_0.js"), d3.json(stats)]).then(function ([map, data, stats]) {
+	Promise.all([d3.json(map), d3.json("data/newjson_0.js"), d3.json(stats), d3.json(evolution)]).then(function ([map, data, stats, evolution]) {
 		topology = map;
 		dataset = data;
 		datastats = stats;
+		dataEvolution = evolution;
 		dataset.forEach(function (i) {
 			countriesHost.push(i.Country);
 		})
@@ -312,7 +315,7 @@ function createLineChart(data, group, value) {
 
 
 	var years = [];
-	dataset.forEach(function (d) {
+	data.forEach(function (d) {
 		years.push(d.Year);
 	})
 
@@ -414,7 +417,7 @@ function createLineChart(data, group, value) {
 				(update) => {
 					update
 						.transition()
-						.duration(2000)
+						.duration(3000)
 						.attr("cx", (d) => x(d.Year))
 						.attr("cy", (d) => y(d.ParticipantsEvolution))
 						.attr("r", 5)
@@ -465,7 +468,7 @@ function createLineChart(data, group, value) {
 				(update) => {
 					update
 						.transition()
-						.duration(2000)
+						.duration(3000)
 						.attr("cx", (d) => x(d.Year))
 						.attr("cy", (d) => y(d.WomenEvolution))
 						.attr("r", 5)
@@ -480,6 +483,16 @@ function createLineChart(data, group, value) {
 				}
 			);
 	}
+}
+
+function updateLineChart(group) {
+	linechart = d3.select("div#secondLine").select("svg")
+
+	dataEvolution1 = dataEvolution.filter(function (d) {
+		if (selectedCountries.includes(d.Team) || selectedCountriesNotHost.includes(d.Team)) return d;
+	})
+
+	createLineChart(dataEvolution1, group, false)
 }
 
 function createClevelandMedalsPerPart(stats, flag) {
@@ -506,8 +519,10 @@ function createClevelandMedalsPerPart(stats, flag) {
 	if (flag) {
 		d3.select("div#clevelandMedalsP")
 			.append("svg")
+
+
 	}
-	
+
 	svg = d3.select("div#clevelandMedalsP")
 		.select("svg")
 		.attr("width", width + margin.left + margin.right)
@@ -527,8 +542,6 @@ function createClevelandMedalsPerPart(stats, flag) {
 		if (selectedCountriesNotHost.includes(d.Country) || selectedCountries.includes(d.Country))
 			return d;
 	})
-
-	console.log(datastats1);
 
 	const y = d3.scaleBand()
 		.range([0, height])
@@ -889,71 +902,10 @@ function handleMouseClick(event, d) {
 	});
 
 	createClevelandMedalsPerPart(datastats, false);
-
-	/*
-	
-		if (selectedGroup == "General") {
-			linechart
-				.select(".line")
-				.selectAll("circle")
-				.data(dataset1, function (i) {
-					return i.Year;
-				})
-				.join(
-					(enter) => {
-						return enter
-							.append("circle")
-							.attr("cx", (d) => x(d.Year))
-							.attr("cy", (d) => y(d.ParticipantsEvolution))
-							.attr("r", 5)
-					},
-					(update) => {
-						update
-							.append("circle")
-							.attr("cx", (d) => x(d.Year))
-							.attr("cy", (d) => y(d.ParticipantsEvolution))
-							.attr("r", 5)
-					},
-					(exit) => {
-						exit.remove();
-					});
-	
-			createLineChart(dataset, "General");
-			triggerTransitionDelay();
-		}
-		else {
-			linechart
-				.selectAll(".line")
-				.selectAll("circle")
-				.data(dataset1, function (i) {
-					return i.Year;
-				})
-				.join(
-					(enter) => {
-						return enter
-							.append("circle")
-							.attr("cx", (d) => x(d.Year))
-							.attr("cy", (d) => y(d.WomenEvolution))
-							.attr("r", 5)
-							.style("fill", "#ff1493")
-					},
-					(update) => {
-						update
-							.append("circle")
-							.attr("cx", (d) => x(d.Year))
-							.attr("cy", (d) => y(d.WomenEvolution))
-							.attr("r", 5)
-							.style("fill", "#ff1493")
-					},
-					(exit) => {
-						exit.remove();
-					});
-			createLineChart(dataset, "Women");
-			triggerTransitionDelay();
-		}
-	*/
-
-
+	if (selectedCountries.length == 0 && selectedCountriesNotHost.length == 0)
+		createLineChart(dataset, "General", false);
+	else
+		updateLineChart("General");
 }
 
 function handleClickLine(event, d) {
@@ -1075,7 +1027,11 @@ function handleClickLine(event, d) {
 					exit.remove();
 				});
 
-		createLineChart(dataset, "General", false);
+
+		if (selectedCountries.length == 0 && selectedCountriesNotHost.length == 0)
+			createLineChart(dataset, "General", false);
+		else
+			updateLineChart("General");
 		triggerTransitionDelay();
 	}
 	else {
@@ -1113,7 +1069,11 @@ function handleClickLine(event, d) {
 				(exit) => {
 					exit.remove();
 				});
-		createLineChart(dataset, "Women", false);
+
+		if (selectedCountries.length == 0 && selectedCountriesNotHost.length == 0)
+			createLineChart(dataset, "Women", false);
+		else
+			updateLineChart("Women");
 		triggerTransitionDelay();
 	}
 }
@@ -1121,13 +1081,19 @@ function handleClickLine(event, d) {
 function update(selectedGroup) {
 	switch (selectedGroup) {
 		case "General":
-			createLineChart(dataset, "General", false);
 			selectedGroup = "General";
+			if (selectedCountries.length == 0 && selectedCountriesNotHost.length == 0)
+				createLineChart(dataset, "General", false);
+			else
+				updateLineChart("General");
 			triggerTransitionDelay();
 			break;
 		case "Women":
-			createLineChart(dataset, "Women", false);
 			selectedGroup = "Women";
+			if (selectedCountries.length == 0 && selectedCountriesNotHost.length == 0)
+				createLineChart(dataset, "Women", false);
+			else
+				updateLineChart("Women");
 			triggerTransitionDelay();
 			break;
 	}
