@@ -29,7 +29,6 @@ function init() {
 		createClevelandMedalsPerPart(stats);
 		createClevelandMedalsPerGender(stats);
 		createListCountries();
-		createProgressBar(stats);
 		addZoom();
 	});
 }
@@ -847,7 +846,8 @@ function handleClevelandClick(event, d) {
 	createClevelandMedalsPerGender(datastats);
 }
 
-function createProgressBar(stats) {
+function createProgressBar(country, women) {
+
 	const width = window.innerWidth * 0.445;
 	height = window.innerHeight * 0.383;
 
@@ -863,28 +863,60 @@ function createProgressBar(stats) {
 	const pie = d3.pie()
 		.value(d => d[1])
 
-	const opacity = d3.scaleOrdinal()
-		.range([1, 0])
+	if(women){
+	const stroke = d3.scaleOrdinal()
+	.range(["#b94366", "#ffe6ee"])
 
-	const data_ready = pie([['pais', 70], ['', 30]])
+	const fill = d3.scaleOrdinal()
+	.range(["#ff1493", "white"])
+
+	const data_aux = pie([['pais', country.PercWomenMedalists], ['', 100 - country.PercWomenMedalists]])
 
 	svg
-		.selectAll('whatever')
-		.data(data_ready)
+		.selectAll('progress')
+		.data(data_aux)
 		.join('path')
 		.attr('d', d3.arc()
 			.innerRadius(30)
 			.outerRadius(radius)
 		)
-		.attr('fill', "#ff1493")
-		.style("opacity", d => opacity(d.data[0]))
-		.style("stroke", "#b94366")
-		.style("stroke-width", 3)
+		.attr('fill', d => fill(d.data))
+		.style("opacity", 1)
+		.style("stroke", d=>stroke(d.data))
+		.style("stroke-width", 2)
 
 	svg.append("text")
 		.attr("text-anchor", "middle")
-		.text('70%')
+		.text(country.PercWomenMedalists + "%")
 		.attr("font-size", "15px");
+	} else{
+
+	const stroke = d3.scaleOrdinal()
+	.range(["#23395d", "#b1f2ff"])
+
+	const fill = d3.scaleOrdinal()
+	.range(["steelblue", "white"])
+
+	const data_aux = pie([['pais', country.PercMenMedalists], ['', 100 - country.PercMenMedalists]])
+
+	svg
+		.selectAll('progress')
+		.data(data_aux)
+		.join('path')
+		.attr('d', d3.arc()
+			.innerRadius(30)
+			.outerRadius(radius)
+		)
+		.attr('fill', d => fill(d.data))
+		.style("opacity", 1)
+		.style("stroke", d=>stroke(d.data))
+		.style("stroke-width", 2)
+
+	svg.append("text")
+		.attr("text-anchor", "middle")
+		.text(country.PercMenMedalists + "%")
+		.attr("font-size", "15px");
+	}
 }
 
 function handleMouseOver(event, d) {
@@ -1095,6 +1127,22 @@ function handleMouseClick(event, d) {
 		createLineChart(dataset, "General", false);
 	else
 		updateLineChart("General");
+
+	var data_aux;
+	if (selectedCountries.length != 0 || selectedCountriesNotHost != 0){
+		for (i = 0; i < selectedCountries.length; i++) {
+			if(selectedCountries[i] == d.properties.name){
+				datastats.forEach(function(c){
+				if(c.Country === d.properties.name){
+					data_aux = c;
+					return c;
+				}
+			})
+			createProgressBar(data_aux, true);
+			createProgressBar(data_aux, false);
+			}
+		}
+	}
 }
 
 function handleClickLine(event, d) {
