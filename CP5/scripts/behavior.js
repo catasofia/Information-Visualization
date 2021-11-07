@@ -8,6 +8,7 @@ var selectedCountriesNotHost = [];
 var selectedGroup = "General";
 var countriesHost = [];
 var countriesNotHost = [];
+var matrix = [];
 
 function init() {
 	Promise.all([d3.json(map), d3.json("data/newjson_0.js"), d3.json(stats), d3.json(evolution)]).then(function ([map, data, stats, evolution]) {
@@ -25,7 +26,7 @@ function init() {
 
 		createChoroplethMap();
 		createLineChart(data, "General", true);
-		createClevelandMedalsPerPart(stats, true);
+		createClevelandMedalsPerPart(stats);
 		createClevelandMedalsPerGender(stats);
 		createListCountries();
 		createProgressBar(stats);
@@ -270,7 +271,6 @@ function triggerTransitionDelay() {
 			})
 	}
 	else {
-		console.log(selectedCountries);
 		d3
 			.select(".line")
 			.selectAll("circle")
@@ -378,10 +378,21 @@ function createLineChart(data, group, value) {
 		.text("Year");
 
 
+	if (!value) sumstat = d3.group(data, d => d.NOC);
+	else data1 = data;
+
+	if (!value) {
+		i = 0;
+		sumstat.forEach(function (d) {
+			matrix[0] = d.values();
+		})
+		data1 = matrix[0];
+	}
+
 	if (group === "General") {
 		svg
 			.select("path")
-			.datum(data)
+			.datum(data1)
 			.transition()
 			.duration(3000)
 			.attr("stroke", "#444444")
@@ -392,7 +403,7 @@ function createLineChart(data, group, value) {
 		svg
 			.select("g.line")
 			.selectAll("circle")
-			.data(data, function (d) {
+			.data(data1, function (d) {
 				return d.Year;
 			})
 
@@ -435,7 +446,7 @@ function createLineChart(data, group, value) {
 	else {
 		svg
 			.select("path")
-			.datum(data)
+			.datum(sumstat)
 			.transition()
 			.duration(3000)
 			.attr("stroke-width", 2)
@@ -446,7 +457,7 @@ function createLineChart(data, group, value) {
 		svg
 			.select("g.line")
 			.selectAll("circle")
-			.data(data, function (d) {
+			.data(sumstat, function (d) {
 				return d.Year;
 			})
 
@@ -489,39 +500,29 @@ function updateLineChart(group) {
 	linechart = d3.select("div#secondLine").select("svg")
 
 	dataEvolution1 = dataEvolution.filter(function (d) {
-		if (selectedCountries.includes(d.Team) || selectedCountriesNotHost.includes(d.Team)) return d;
+		if (selectedCountries.includes(d.Country) || selectedCountriesNotHost.includes(d.Country)) return d;
 	})
 
 	createLineChart(dataEvolution1, group, false)
 }
 
-function createClevelandMedalsPerPart(stats, flag) {
-	const margin = { top: 28, right: 30, bottom: 30, left: 40 },
+function createClevelandMedalsPerPart(stats) {
+	const margin = { top: 28, right: 30, bottom: 30, left: 55 },
 		width = window.innerWidth / 4.5 - margin.left - margin.right,
 		height = window.innerHeight * 0.298;
 
-	/* var sumMedals = 0;
-	var sumPartic = 0
+	/* var sumMedals;
+	var sumPartic;
 	
-	d3.nest().key(function(d){
-		return d.Continent;
-	}).rollup(function(leaves){
-		sumMedals = d3.sum(leaves,function(d){
-			return d.NrMedals;
-		})
-		sumPartic = d3.sum(leaves, function(d){
-			return d.Participants;
-		})
-	});
- */
+	sumstats = d3.group(stats, d => d.NOC)
+	sumPartic = d3.rollup(stats, v => d3.sum(v , d => d.Participants), d => d.Continent);
+	sumMedals = d3.rollup(stats, v => d3.sum(v , d => d.NrMedals), d => d.Continent);
+ 
+	console.log(sumPartic);
+	console.log(sumMedals) */
 
-
-	if (flag) {
-		d3.select("div#clevelandMedalsP")
-			.append("svg")
-
-
-	}
+	d3.select("div#clevelandMedalsP")
+		.append("svg")
 
 	svg = d3.select("div#clevelandMedalsP")
 		.select("svg")
@@ -530,30 +531,43 @@ function createClevelandMedalsPerPart(stats, flag) {
 		.append("g")
 		.attr("transform", `translate(${margin.left}, ${margin.top})`)
 
-	const x = d3.scaleLinear()
-		.domain([0, 20000])
+	datastats1 = datastats.filter(function (d) {
+		if (selectedCountries.length == 0 && selectedCountriesNotHost.length == 0) {
+			if (d.Participants > 5000)
+				return d;
+		}
+		else if (selectedCountriesNotHost.includes(d.Country) || selectedCountries.includes(d.Country))
+			return d;
+	})
+
+	x = d3.scaleLinear()
+		.domain([0, d3.max(datastats1, (d) => d.Participants)])
 		.range([0, width]);
 
 	svg.append("g")
 		.attr("transform", `translate(0, ${height})`)
 		.call(d3.axisBottom(x))
 
-	datastats1 = datastats.filter(function (d) {
-		if (selectedCountriesNotHost.includes(d.Country) || selectedCountries.includes(d.Country))
-			return d;
-	})
 
-	const y = d3.scaleBand()
+	/* 	keys = sumPartic.keys();
+		values = sumPartic.values();
+	
+		console.log(keys)
+		console.log(values)
+	*/
+
+	y = d3.scaleBand()
 		.range([0, height])
 		.domain(datastats1.map(function (d) { return d.NOC; }))
 		.padding(1);
 	svg.append("g")
 		.call(d3.axisLeft(y))
 
-
 	svg.selectAll("myline")
 		.data(datastats1)
 		.join("line")
+		.transition()
+		.duration(1500)
 		.attr("x1", function (d) { return x(d.NrMedals); })
 		.attr("x2", function (d) { return x(d.Participants); })
 		.attr("y1", function (d) { return y(d.NOC); })
@@ -564,26 +578,32 @@ function createClevelandMedalsPerPart(stats, flag) {
 	svg.selectAll("mycircle")
 		.data(datastats1)
 		.join("circle")
+		.transition()
+		.duration(1500)
 		.attr("cx", function (d) { return x(d.NrMedals); })
 		.attr("cy", function (d) { return y(d.NOC); })
 		.attr("r", "6")
 		.style("fill", "#6c9dc4")
-		.append("title")
+		/* .append("title")
 		.text(function (d) {
-			return d.NrMedals;
-		});
+			return "Medalists: " + d.NrMedals;
+		}) */
+		//TODO A TOOLTIP
 
 	svg.selectAll("mycircle")
 		.data(datastats1)
 		.join("circle")
+		.transition()
+		.duration(1500)
 		.attr("cx", function (d) { return x(d.Participants); })
 		.attr("cy", function (d) { return y(d.NOC); })
 		.attr("r", "6")
 		.style("fill", "#444444")
-		.append("title")
+		/* .append("title")
 		.text(function (d) {
-			return d.Participants;
-		});
+			return "Participants: " + d.Participants;
+		}); */
+		//TODO A TOOLTIP
 
 	svg.append("text")
 		.style("font-size", "10px")
@@ -617,24 +637,36 @@ function createClevelandMedalsPerGender(stats) {
 		.append("g")
 		.attr("transform", `translate(${margin.left}, ${margin.top})`);
 
+	datastats1 = datastats.filter(function (d) {
+		if (selectedCountries.length == 0 && selectedCountriesNotHost.length == 0) {
+			if (d.Participants > 5000)
+				return d;
+		}
+		else if (selectedCountriesNotHost.includes(d.Country) || selectedCountries.includes(d.Country))
+			return d;
+	})
+
 	const x = d3.scaleLinear()
-		.domain([0, 100])
+		.domain([0, d3.max(datastats1, (d) => d.PercMenMedalists)])
 		.range([0, width]);
 
 	svg.append("g")
 		.attr("transform", `translate(0, ${height})`)
 		.call(d3.axisBottom(x))
 
+
 	const y = d3.scaleBand()
 		.range([0, height])
-		.domain(stats.map(function (d) { return d.NOC; }))
+		.domain(datastats1.map(function (d) { return d.NOC; }))
 		.padding(1);
 	svg.append("g")
 		.call(d3.axisLeft(y))
 
 	svg.selectAll("myline")
-		.data(stats)
+		.data(datastats1)
 		.join("line")
+		.transition()
+		.duration(1000)
 		.attr("x1", function (d) { return x(d.PercWomenMedalists); })
 		.attr("x2", function (d) { return x(d.PercMenMedalists); })
 		.attr("y1", function (d) { return y(d.NOC); })
@@ -643,22 +675,28 @@ function createClevelandMedalsPerGender(stats) {
 		.attr("stroke-width", "1px")
 
 	svg.selectAll("mycircle")
-		.data(stats)
+		.data(datastats1)
 		.join("circle")
 		.attr("cx", function (d) { return x(d.PercWomenMedalists); })
 		.attr("cy", function (d) { return y(d.NOC); })
 		.attr("r", "6")
 		.style("fill", "#ff1493")
 		.append("title")
+		.text(function (d) {
+			return "Women Percentage: " + d.PercWomenMedalists + "%";
+		});
 
 	svg.selectAll("mycircle")
-		.data(stats)
+		.data(datastats1)
 		.join("circle")
 		.attr("cx", function (d) { return x(d.PercMenMedalists); })
 		.attr("cy", function (d) { return y(d.NOC); })
 		.attr("r", "6")
 		.style("fill", "#6c9dc4")
 		.append("title")
+		.text(function (d) {
+			return "Men Percentage " + d.PercMenMedalists + "%";
+		});
 
 	svg.append("text")
 		.style("font-size", "10px")
@@ -667,7 +705,7 @@ function createClevelandMedalsPerGender(stats) {
 		.attr("x", width)
 		.attr("y", height + 28)
 		.style("font-family", "sans-serif")
-		.text("Nr of participants");
+		.text("Percentage of medalists");
 
 	svg.append("text")
 		.style("font-size", "10px")
@@ -758,8 +796,11 @@ function handleMouseLeave(event, d) {
 function handleMouseClick(event, d) {
 	choropleth = d3.select("div#choropleth").select("svg");
 	linechart = d3.select("div#secondLine").select("svg");
-	cleveland1 = d3.select("div#clevelandMedalsP");
-	cleveland2 = d3.select("div#clevelandMedalsG");
+	cleveland1 = d3.select("div#clevelandMedalsP").select("svg");
+	cleveland2 = d3.select("div#clevelandMedalsG").select("svg");
+
+	cleveland1.remove()
+	cleveland2.remove()
 
 	if (selectedGroup === "Women") {
 		if (!selectedCountries.includes(d.properties.name)) {
@@ -843,7 +884,6 @@ function handleMouseClick(event, d) {
 			.selectAll("path")
 			.filter(function (c) {
 				if (d.properties.name == c.properties.name) {
-					selectedCountriesNotHost.push(d.properties.name)
 					return c;
 				}
 			})
@@ -853,21 +893,13 @@ function handleMouseClick(event, d) {
 			.selectAll("path")
 			.filter(function (c) {
 				if (d.properties.name == c.properties.name) {
-					var newlist1 = [];
-					newlist1.push(d.properties.name);
-
-					selectedCountriesNotHost = selectedCountriesNotHost.filter(function (el) {
-						return !newlist1.includes(el);
-					});
 					return c;
 				}
 			})
 			.style("stroke-width", 1);
 	}
 
-
-
-	if (selectedCountries.includes(d.properties.name)) {
+	if (selectedCountries.includes(d.properties.name) && countriesHost.includes(d.properties.name)) {
 		for (i = 0; i < selectedCountries.length; i++) {
 			if (selectedCountries[i] === d.properties.name) {
 
@@ -879,7 +911,7 @@ function handleMouseClick(event, d) {
 				});
 			}
 		}
-	} else {
+	} else if (!selectedCountries.includes(d.properties.name) && countriesHost.includes(d.properties.name)) {
 		dataset1 = dataset.filter(function (c) {
 			if (d.properties.name === c.Country) {
 				if (!selectedCountries.includes(d.properties.name)) {
@@ -895,13 +927,41 @@ function handleMouseClick(event, d) {
 
 	}
 
-	dataset1 = dataset.filter(function (c) {
+	if (selectedCountriesNotHost.includes(d.properties.name) && !countriesHost.includes(d.properties.name)) {
+		for (i = 0; i < selectedCountriesNotHost.length; i++) {
+			if (selectedCountriesNotHost[i] === d.properties.name) {
+
+				var newlist = [];
+				newlist.push(d.properties.name);
+
+				selectedCountriesNotHost = selectedCountriesNotHost.filter(function (el) {
+					return !newlist.includes(el);
+				});
+			}
+		}
+	} else if (!selectedCountriesNotHost.includes(d.properties.name) && !countriesHost.includes(d.properties.name)) {
+		dataset1 = datastats.filter(function (c) {
+			console.log(datastats)
+			if (d.properties.name === c.Country) {
+				selectedCountriesNotHost.push(d.properties.name);
+				return d.properties.name;
+
+			} else if (selectedCountriesNotHost.includes(c.Country)) {
+				selectedCountriesNotHost.push(d.properties.name);
+				return d.properties.name;
+			}
+		})
+
+	}
+
+	/* dataset1 = dataset.filter(function (c) {
 		if (selectedCountries.includes(c.Country)) {
 			return c.Country;
 		}
-	});
+	}); */
 
-	createClevelandMedalsPerPart(datastats, false);
+	createClevelandMedalsPerPart(datastats);
+	createClevelandMedalsPerGender(datastats);
 	if (selectedCountries.length == 0 && selectedCountriesNotHost.length == 0)
 		createLineChart(dataset, "General", false);
 	else
