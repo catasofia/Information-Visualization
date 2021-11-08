@@ -2,6 +2,7 @@ var map = "/data/countries50.json"
 var stats = "/data/withcont_0.js"
 var evolution = "/data/evolution_countries_new.js"
 var topology;
+var tooltip;
 var dataEvolution;
 var selectedCountries = [];
 var selectedCountriesNotHost = [];
@@ -24,7 +25,13 @@ function init() {
 				countriesNotHost.push(j.Country);
 		})
 
+		tooltip = d3.select("body")
+			.append("div")
+			.attr("class", "tooltip")
+			.style("opacity", 0)
+
 		createChoroplethMap();
+		createProgressBar("", "", true)
 		createLineChart(data, "General", true);
 		createClevelandMedalsPerPart(stats);
 		createClevelandMedalsPerGender(stats);
@@ -39,17 +46,16 @@ function createListCountries() {
 	datastats.forEach(function (i) {
 		countries.push(i.Country);
 	})
-	// Initialize the button
+
 	var dropdownButton = d3.select("#progressBar")
 		.append('select')
 
-	// add the options to the button
-	dropdownButton // Add a button
-		.selectAll('myOptions') // Next 4 lines add 6 options = 6 colors
+	dropdownButton
+		.selectAll('myOptions')
 		.data(countries)
 		.enter()
 		.append('option')
-		.text(function (d) { return d; }) // text showed in the menu
+		.text(function (d) { return d; })
 		.attr("value", function (d) { return d; })
 }
 
@@ -565,28 +571,42 @@ function createClevelandMedalsPerPart(stats) {
 	svg.selectAll("myline")
 		.data(datastats1)
 		.join("line")
-		.transition()
-		.duration(1500)
-		.attr("x1", function (d) { return x(d.NrMedals); })
-		.attr("x2", function (d) { return x(d.Participants); })
+		.attr("class", "line")
+		.attr("x1", function (d) { return x(0); })
+		.attr("x2", function (d) { return x(0); })
 		.attr("y1", function (d) { return y(d.NOC); })
 		.attr("y2", function (d) { return y(d.NOC); })
 		.attr("stroke", "grey")
 		.attr("stroke-width", "1px")
 
+	svg.selectAll(".line")
+		.transition()
+		.duration(2000)
+		.attr("x1", function (d) { return x(d.NrMedals); })
+		.attr("x2", function (d) { return x(d.Participants); })
+
 	svg.selectAll("mycircle")
 		.data(datastats1)
 		.enter()
 		.append("circle")
-		.attr("cx", function (d) { return x(d.NrMedals); })
+		.attr("class", "circle1")
+		.attr("cx", x(0))
 		.attr("cy", function (d) { return y(d.NOC); })
 		.attr("r", "6")
 		.style("fill", "#6c9dc4")
-		.on("mouseover", function (d) {
+		.on("mouseover", function (event, i) {
+			console.log(i);
+			tooltip
+				.style("opacity", 1)
+				.html("Medalists: " + i.NrMedals + "%")
+				.style("left", event.pageX + "px")
+				.style("top", event.pageY - 28 + "px");
 			d3.select(this)
 				.style("stroke", "black")
 		})
 		.on("mouseleave", function (d) {
+			tooltip
+				.style("opacity", 0)
 			d3.select(this)
 				.style("stroke", "none")
 		})
@@ -596,19 +616,32 @@ function createClevelandMedalsPerPart(stats) {
 			return "Medalists: " + d.NrMedals;
 		})
 
+	svg.selectAll(".circle1")
+		.transition()
+		.duration(2000)
+		.attr("cx", function (d) { return x(d.NrMedals); })
+
 	svg.selectAll("mycircle")
 		.data(datastats1)
 		.enter()
 		.append("circle")
-		.attr("cx", function (d) { return x(d.Participants); })
+		.attr("class", "circle2")
+		.attr("cx", x(0))
 		.attr("cy", function (d) { return y(d.NOC); })
 		.attr("r", "6")
 		.style("fill", "#444444")
-		.on("mouseover", function (d) {
+		.on("mouseover", function (event, i) {
+			tooltip
+				.style("opacity", 1)
+				.html("Participants: " + i.Participants + "%")
+				.style("left", event.pageX + "px")
+				.style("top", event.pageY - 28 + "px");
 			d3.select(this)
 				.style("stroke", "black")
 		})
 		.on("mouseleave", function (d) {
+			tooltip
+				.style("opacity", 0)
 			d3.select(this)
 				.style("stroke", "none")
 		})
@@ -617,7 +650,11 @@ function createClevelandMedalsPerPart(stats) {
 		.text(function (d) {
 			return "Participants: " + d.Participants;
 		});
-	//TODO A TOOLTIP
+
+	svg.selectAll(".circle2")
+		.transition()
+		.duration(2000)
+		.attr("cx", function (d) { return x(d.Participants); })
 
 	svg.append("text")
 		.style("font-size", "10px")
@@ -660,16 +697,6 @@ function createClevelandMedalsPerGender(stats) {
 			return d;
 	})
 
-	var Tooltip = d3.select("#clevelandMedalsG")
-		.append("div")
-		.style("opacity", 0)
-		.attr("class", "tooltip")
-		.style("background-color", "white")
-		.style("border", "solid")
-		.style("border-width", "2px")
-		.style("border-radius", "5px")
-		.style("padding", "5px")
-
 	if (d3.max(datastats1, (d) => d.PercMenMedalists) > d3.max(datastats1, (d) => d.PercWomenMedalists))
 		maxX = d3.max(datastats1, (d) => d.PercMenMedalists)
 	else maxX = d3.max(datastats1, (d) => d.PercWomenMedalists)
@@ -693,68 +720,71 @@ function createClevelandMedalsPerGender(stats) {
 	svg.selectAll("myline")
 		.data(datastats1)
 		.join("line")
-		.transition()
-		.duration(1000)
-		.ease(d3.easeBounce)
-		.attr("x1", function (d) { return x(d.PercWomenMedalists); })
-		.attr("x2", function (d) { return x(d.PercMenMedalists); })
+		.attr("class", "line")
+		.attr("x1", function (d) { return x(0); })
+		.attr("x2", function (d) { return x(0); })
 		.attr("y1", function (d) { return y(d.NOC); })
 		.attr("y2", function (d) { return y(d.NOC); })
 		.attr("stroke", "grey")
 		.attr("stroke-width", "1px")
 
+	svg.selectAll(".line")
+		.transition()
+		.duration(2000)
+		.attr("x1", function (d) { return x(d.PercWomenMedalists); })
+		.attr("x2", function (d) { return x(d.PercMenMedalists); })
+
 	svg.selectAll("mycircle")
 		.data(datastats1)
 		.enter()
 		.append("circle")
-		.attr("cx", function (d) { return x(d.PercWomenMedalists); })
+		.attr("class", "circle1")
+		.attr("cx", function (d) { return x(0); })
 		.attr("cy", function (d) { return y(d.NOC); })
 		.attr("r", "6")
 		.style("fill", "#ff1493")
-		.on("mouseover", function (d) {
-			Tooltip
+		.on("mouseover", function (event, i) {
+			tooltip
 				.style("opacity", 1)
-				.style("left", (d3.pointer(this)[0] + 30) + "px")
-				.style("top", (d3.pointer(this)[1] + 30) + "px")
+				.html("Percentage of<br>Women Medalists: " + i.PercWomenMedalists + "%")
+				.style("left", event.pageX + "px")
+				.style("top", event.pageY - 28 + "px");
 			d3.select(this)
 				.style("stroke", "black")
 		})
-		.on("mousemove", function (d, i) {
-			Tooltip
-				.html("Percentage of<br>Women Medalists: " + i.PercWomenMedalists + "%")
-				.style("left", (d3.pointer(this)[0] + 30) + "px")
-				.style("top", (d3.pointer(this)[1] + 30) + "px")
-		})
 		.on("mouseleave", function (d) {
-			Tooltip
+			tooltip
 				.style("opacity", 0)
 			d3.select(this)
 				.style("stroke", "none")
 		})
 		.on("click", handleClevelandClick)
 
+	svg.selectAll(".circle1")
+		.transition()
+		.duration(2000)
+		.attr("cx", function (d) { return x(d.PercWomenMedalists); })
+
 	svg.selectAll("mycircle")
 		.data(datastats1)
 		.enter()
 		.append("circle")
-		.attr("cx", function (d) { return x(d.PercMenMedalists); })
+		.attr("class", "circle2")
+		.attr("cx", function (d) { return x(0); })
 		.attr("cy", function (d) { return y(d.NOC); })
 		.attr("r", "6")
 		.style("fill", "#6c9dc4")
-		.on("mouseover", function (d) {
-			Tooltip
+		.on("mouseover", function (event, i) {
+			tooltip
 				.style("opacity", 1)
+				.html("Percentage of<br>Men Medalists: " + i.PercMenMedalists + "%")
+				.style("left", event.pageX + "px")
+				.style("top", event.pageY - 28 + "px");
 			d3.select(this)
 				.style("stroke", "black")
 		})
-		.on("mousemove", function (d, i) {
-			Tooltip
-				.html("Percentage of<br>Men Medalists: " + i.PercMenMedalists + "%")
-				.style("top", d3.select(this).attr("cy") + "px")
-				.style("left", d3.select(this).attr("cx") + "px")
-		})
 		.on("mouseleave", function (d) {
-			Tooltip
+			tooltip
 				.style("opacity", 0)
 			d3.select(this)
 				.style("stroke", "none")
@@ -764,6 +794,11 @@ function createClevelandMedalsPerGender(stats) {
 		.text(function (d) {
 			return "Men Percentage " + d.PercMenMedalists + "%";
 		});
+
+	svg.selectAll(".circle2")
+		.transition()
+		.duration(2000)
+		.attr("cx", function (d) { return x(d.PercMenMedalists); })
 
 	svg.append("text")
 		.style("font-size", "10px")
@@ -846,76 +881,81 @@ function handleClevelandClick(event, d) {
 	createClevelandMedalsPerGender(datastats);
 }
 
-function createProgressBar(country, women) {
+function createProgressBar(country, women, flag) {
 
 	const width = window.innerWidth * 0.445;
 	height = window.innerHeight * 0.383;
 
 	const radius = 50;
 
-	const svg = d3.select("#progressBar")
+	if(flag){
+		svg = d3.select("div#progressBar")
 		.append("svg")
 		.attr("width", width)
 		.attr("height", height)
 		.append("g")
 		.attr("transform", `translate(${width / 2},${height / 2})`);
+	}
+
+	svg = d3.select("#progressBar")
+		.select("svg")
 
 	const pie = d3.pie()
 		.value(d => d[1])
 
-	if(women){
-	const stroke = d3.scaleOrdinal()
-	.range(["#b94366", "#ffe6ee"])
+	if (women) {
+		const stroke = d3.scaleOrdinal()
+			.range(["#b94366", "#ffe6ee"])
 
-	const fill = d3.scaleOrdinal()
-	.range(["#ff1493", "white"])
+		const fill = d3.scaleOrdinal()
+			.range(["#ff1493", "white"])
 
-	const data_aux = pie([['pais', country.PercWomenMedalists], ['', 100 - country.PercWomenMedalists]])
+		const data_aux = pie([['pais', country.PercWomenMedalists], ['', 100 - country.PercWomenMedalists]])
 
-	svg
-		.selectAll('progress')
-		.data(data_aux)
-		.join('path')
-		.attr('d', d3.arc()
-			.innerRadius(30)
-			.outerRadius(radius)
-		)
-		.attr('fill', d => fill(d.data))
-		.style("opacity", 1)
-		.style("stroke", d=>stroke(d.data))
-		.style("stroke-width", 2)
+		svg
+			.selectAll('progress')
+			.data(data_aux)
+			.join('path')
+			.attr('d', d3.arc()
+				.innerRadius(30)
+				.outerRadius(radius)
+			)
+			.attr('fill', d => fill(d.data))
+			.style("opacity", 1)
+			.style("stroke", d => stroke(d.data))
+			.style("stroke-width", 2)
 
-	svg.append("text")
-		.attr("text-anchor", "middle")
-		.text(country.PercWomenMedalists + "%")
-		.attr("font-size", "15px");
-	} else{
+		svg.append("text")
+			.attr("text-anchor", "middle")
+			.text(country.PercWomenMedalists + "%")
+			.attr("font-size", "15px");
+	} else {
 
-	const stroke = d3.scaleOrdinal()
-	.range(["#23395d", "#b1f2ff"])
+		const stroke = d3.scaleOrdinal()
+			.range(["#23395d", "#b1f2ff"])
 
-	const fill = d3.scaleOrdinal()
-	.range(["steelblue", "white"])
+		const fill = d3.scaleOrdinal()
+			.range(["steelblue", "white"])
 
-	const data_aux = pie([['pais', country.PercMenMedalists], ['', 100 - country.PercMenMedalists]])
+		const data_aux = pie([['pais', country.PercMenMedalists], ['', 100 - country.PercMenMedalists]])
 
-	svg
-		.selectAll('progress')
-		.data(data_aux)
-		.join('path')
-		.attr('d', d3.arc()
-			.innerRadius(30)
-			.outerRadius(radius)
-		)
-		.attr('fill', d => fill(d.data))
-		.style("opacity", 1)
-		.style("stroke", d=>stroke(d.data))
-		.style("stroke-width", 2)
+		svg
+			.selectAll('progress')
+			.data(data_aux)
+			.join('path')
+			.attr('d', d3.arc()
+				.innerRadius(30)
+				.outerRadius(radius)
+			)
+			.attr('fill', d => fill(d.data))
+			.style("opacity", 1)
+			.style("stroke", d => stroke(d.data))
+			.style("stroke-width", 2)
 
-	svg.append("text")
-		.attr("text-anchor", "middle")
-		.text(country.PercMenMedalists + "%")
-		.attr("font-size", "15px");
+		svg.append("text")
+			.attr("text-anchor", "middle")
+			.text(country.PercMenMedalists + "%")
+			.attr("font-size", "15px");
 	}
 }
 
@@ -1129,17 +1169,17 @@ function handleMouseClick(event, d) {
 		updateLineChart("General");
 
 	var data_aux;
-	if (selectedCountries.length != 0 || selectedCountriesNotHost != 0){
+	if (selectedCountries.length != 0 || selectedCountriesNotHost != 0) {
 		for (i = 0; i < selectedCountries.length; i++) {
-			if(selectedCountries[i] == d.properties.name){
-				datastats.forEach(function(c){
-				if(c.Country === d.properties.name){
-					data_aux = c;
-					return c;
-				}
-			})
-			createProgressBar(data_aux, true);
-			createProgressBar(data_aux, false);
+			if (selectedCountries[i] == d.properties.name) {
+				datastats.forEach(function (c) {
+					if (c.Country === d.properties.name) {
+						data_aux = c;
+						return c;
+					}
+				})
+				createProgressBar(data_aux, true, false);
+				createProgressBar(data_aux, false, false);
 			}
 		}
 	}
