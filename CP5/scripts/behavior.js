@@ -13,6 +13,7 @@ var matrix = [];
 var colorScale;
 var nrCountries = 0;
 var lineg;
+var dataset;
 
 function init() {
 	Promise.all([d3.json(map), d3.json("data/newjson_0.js"), d3.json(stats), d3.json(evolution)]).then(function ([map, data, stats, evolution]) {
@@ -67,7 +68,7 @@ function createListCountries() {
 }
 
 function createChoroplethMap() {
-	var width = window.innerWidth * 0.52;
+	var width = window.innerWidth * 0.595;
 	var height = window.innerHeight * 0.46;
 	var projection = d3
 		.geoMercator()
@@ -131,16 +132,22 @@ function createChoroplethMap() {
 				}
 			}
 		});
-
+	svg.append('text')
+	.attr('x', 10)
+	.attr('y', 213)
+	.attr('stroke', '#333333')
+	.style("font-size", "13px")
+	.style("font-family", "sans-serif")
+	.text("Difference of medals:")
 	svg.append('rect')
-		.attr('x', 20)
+		.attr('x', 10)
 		.attr('y', 225)
 		.attr('width', 20)
 		.attr('height', 20)
 		.attr('stroke', '#333333')
 		.attr('fill', '#f5918c');
 	svg.append('text')
-		.attr('x', 45)
+		.attr('x', 35)
 		.attr('y', 238)
 		.attr('stroke', '#333333')
 		.style("font-size", "13px")
@@ -148,14 +155,14 @@ function createChoroplethMap() {
 		.text("<0")
 
 	svg.append('rect')
-		.attr('x', 20)
+		.attr('x', 10)
 		.attr('y', 247)
 		.attr('width', 20)
 		.attr('height', 20)
 		.attr('stroke', "#333333")
 		.attr('fill', d3.interpolateRgb("white", "#3e5f85")(15 / 200));
 	svg.append('text')
-		.attr('x', 45)
+		.attr('x', 35)
 		.attr('y', 262)
 		.attr('stroke', '#333333')
 		.style("font-size", "13px")
@@ -163,14 +170,14 @@ function createChoroplethMap() {
 		.text("0-29")
 
 	svg.append('rect')
-		.attr('x', 20)
+		.attr('x', 10)
 		.attr('y', 269)
 		.attr('width', 20)
 		.attr('height', 20)
 		.attr('stroke', "#333333")
 		.attr('fill', d3.interpolateRgb("white", "#3e5f85")(45 / 200));
 	svg.append('text')
-		.attr('x', 45)
+		.attr('x', 35)
 		.attr('y', 285)
 		.attr('stroke', '#333333')
 		.style("font-size", "13px")
@@ -178,14 +185,14 @@ function createChoroplethMap() {
 		.text("30-60")
 
 	svg.append('rect')
-		.attr('x', 20)
+		.attr('x', 10)
 		.attr('y', 291)
 		.attr('width', 20)
 		.attr('height', 20)
 		.attr('stroke', "#333333")
 		.attr('fill', d3.interpolateRgb("white", "#3e5f85")(80 / 200));
 	svg.append('text')
-		.attr('x', 45)
+		.attr('x', 35)
 		.attr('y', 305)
 		.attr('stroke', '#333333')
 		.style("font-size", "13px")
@@ -193,14 +200,14 @@ function createChoroplethMap() {
 		.text("61-100")
 
 	svg.append('rect')
-		.attr('x', 20)
+		.attr('x', 10)
 		.attr('y', 313)
 		.attr('width', 20)
 		.attr('height', 20)
 		.attr('stroke', "#333333")
 		.attr('fill', d3.interpolateRgb("white", "#3e5f85")(135 / 200));
 	svg.append('text')
-		.attr('x', 45)
+		.attr('x', 35)
 		.attr('y', 327)
 		.attr('stroke', '#333333')
 		.style("font-size", "13px")
@@ -208,14 +215,14 @@ function createChoroplethMap() {
 		.text("101-151")
 
 	svg.append('rect')
-		.attr('x', 20)
+		.attr('x', 10)
 		.attr('y', 335)
 		.attr('width', 20)
 		.attr('height', 20)
 		.attr('stroke', "#333333")
 		.attr('fill', d3.interpolateRgb("white", "#3e5f85")(160 / 200));
 	svg.append('text')
-		.attr('x', 45)
+		.attr('x', 35)
 		.attr('y', 349)
 		.attr('stroke', '#333333')
 		.style("font-size", "13px")
@@ -223,14 +230,14 @@ function createChoroplethMap() {
 		.text("152-199")
 
 	svg.append('rect')
-		.attr('x', 20)
+		.attr('x', 10)
 		.attr('y', 357)
 		.attr('width', 20)
 		.attr('height', 20)
 		.attr('stroke', "#333333")
 		.attr('fill', d3.interpolateRgb("white", "#3e5f85")(200 / 200));
 	svg.append('text')
-		.attr('x', 45)
+		.attr('x', 35)
 		.attr('y', 371)
 		.attr('stroke', '#333333')
 		.style("font-size", "13px")
@@ -238,14 +245,14 @@ function createChoroplethMap() {
 		.text("200-250")
 
 	svg.append('rect')
-		.attr('x', 20)
+		.attr('x', 10)
 		.attr('y', 379)
 		.attr('width', 20)
 		.attr('height', 20)
 		.attr('stroke', "#333333")
 		.attr('fill', d3.interpolateRgb("white", "#3e5f85")(300 / 200));
 	svg.append('text')
-		.attr('x', 45)
+		.attr('x', 35)
 		.attr('y', 393)
 		.attr('stroke', '#333333')
 		.style("font-size", "13px")
@@ -253,14 +260,14 @@ function createChoroplethMap() {
 		.text(">250")
 
 	svg.append('rect')
-		.attr('x', 20)
+		.attr('x', 10)
 		.attr('y', 401)
 		.attr('width', 20)
 		.attr('height', 20)
 		.attr('stroke', '#333333')
 		.attr('fill', '#cccccc');
 	svg.append('text')
-		.attr('x', 45)
+		.attr('x', 35)
 		.attr('y', 415)
 		.attr('stroke', '#333333')
 		.style("font-size", "13px")
@@ -310,6 +317,8 @@ function createLineChart(data, group, value) {
 
 	line = d3
 		.line()
+		.defined(function (d) {
+			return d.WomenEvolution !== null; })
 		.x((d) => x(d.Year))
 		.y((d) => y(d.ParticipantsEvolution))
 
@@ -317,6 +326,8 @@ function createLineChart(data, group, value) {
 	if (value || nrCountries == 0) {
 		lineg = d3
 			.line()
+			.defined(function (d) {
+				return d.WomenEvolution !== null; })
 			.x((d) => x(d.Year))
 			.y((d) => y(d.ParticipantsEvolution))
 	}
@@ -328,7 +339,7 @@ function createLineChart(data, group, value) {
 
 	x = d3
 		.scaleLinear()
-		.domain(d3.extent(data, (d) => d.Year))
+		.domain([1896, 2016])
 		.range([margin.left, width - 20]);
 
 	y = d3
@@ -338,8 +349,9 @@ function createLineChart(data, group, value) {
 
 
 	var years = [];
-	data.forEach(function (d) {
+	dataset.forEach(function (d) {
 		years.push(d.Year);
+		console.log(years)
 	})
 
 	xAxis = (g) =>
@@ -416,9 +428,7 @@ function createLineChart(data, group, value) {
 			.attr("stroke-width", 2)
 			.attr("id", function (d){
 				if(nrCountries == 0) return "general"
-				else {
-					console.log(data[0].NOC)
-					return data[0].NOC}
+				else return data[0].NOC
 			})
 			.attr("class", "line")
 			.attr("fill", "none")
@@ -596,20 +606,13 @@ function createClevelandMedalsPerPart(stats) {
 		.attr("cy", function (d) { return y(d.NOC); })
 		.attr("r", "6")
 		.style("fill", "#6c9dc4")
-		.on("mouseover", function (event, i) {
-			tooltip
-				.style("opacity", 1)
-				.html("Medalists: " + i.NrMedals + "%")
-				.style("left", event.pageX + "px")
-				.style("top", event.pageY - 28 + "px");
+		.on("mouseover", function(d){
 			d3.select(this)
-				.style("stroke", "black")
+					.style("stroke", "black")
 		})
 		.on("mouseleave", function (d) {
-			tooltip
-				.style("opacity", 0)
 			d3.select(this)
-				.style("stroke", "none")
+					.style("stroke", "none")
 		})
 		.on("click", handleClevelandClick)
 		.append("title")
@@ -631,20 +634,13 @@ function createClevelandMedalsPerPart(stats) {
 		.attr("cy", function (d) { return y(d.NOC); })
 		.attr("r", "6")
 		.style("fill", "#444444")
-		.on("mouseover", function (event, i) {
-			tooltip
-				.style("opacity", 1)
-				.html("Participants: " + i.Participants + "%")
-				.style("left", event.pageX + "px")
-				.style("top", event.pageY - 28 + "px");
+		.on("mouseover", function(d){
 			d3.select(this)
-				.style("stroke", "black")
+					.style("stroke", "black")
 		})
 		.on("mouseleave", function (d) {
-			tooltip
-				.style("opacity", 0)
 			d3.select(this)
-				.style("stroke", "none")
+					.style("stroke", "none")
 		})
 		.on("click", handleClevelandClick)
 		.append("title")
@@ -744,22 +740,20 @@ function createClevelandMedalsPerGender(stats) {
 		.attr("cy", function (d) { return y(d.NOC); })
 		.attr("r", "6")
 		.style("fill", "#ff1493")
-		.on("mouseover", function (event, i) {
-			tooltip
-				.style("opacity", 1)
-				.html("Percentage of<br>Women Medalists: " + i.PercWomenMedalists + "%")
-				.style("left", event.pageX + "px")
-				.style("top", event.pageY - 28 + "px");
+		.on("mouseover", function(d){
 			d3.select(this)
-				.style("stroke", "black")
+					.style("stroke", "black")
 		})
 		.on("mouseleave", function (d) {
-			tooltip
-				.style("opacity", 0)
 			d3.select(this)
-				.style("stroke", "none")
+					.style("stroke", "none")
 		})
 		.on("click", handleClevelandClick)
+		.append("title")
+		.text(function (d) {
+			return "Women Percentage: " + d.PercWomenMedalists + "%";
+		})
+
 
 	svg.selectAll(".circle1")
 		.transition()
@@ -775,20 +769,13 @@ function createClevelandMedalsPerGender(stats) {
 		.attr("cy", function (d) { return y(d.NOC); })
 		.attr("r", "6")
 		.style("fill", "#6c9dc4")
-		.on("mouseover", function (event, i) {
-			tooltip
-				.style("opacity", 1)
-				.html("Percentage of<br>Men Medalists: " + i.PercMenMedalists + "%")
-				.style("left", event.pageX + "px")
-				.style("top", event.pageY - 28 + "px");
+		.on("mouseover", function(d){
 			d3.select(this)
-				.style("stroke", "black")
+					.style("stroke", "black")
 		})
 		.on("mouseleave", function (d) {
-			tooltip
-				.style("opacity", 0)
 			d3.select(this)
-				.style("stroke", "none")
+					.style("stroke", "none")
 		})
 		.on("click", handleClevelandClick)
 		.append("title")
@@ -1168,18 +1155,15 @@ function handleMouseClick(event, d) {
 	createClevelandMedalsPerPart(datastats);
 	createClevelandMedalsPerGender(datastats);
 	if (selectedCountries.length == 0 && selectedCountriesNotHost.length == 0){
-		console.log("ola ola ola ola")
 		createLineChart(dataset, "General", false);
 		deleteLine(d.properties.name)
 	}
-	else if(selectedCountries.includes(d.properties.name) || selectedCountriesNotHost.includes(d.properties.name)){
-		console.log("adeusssss")
+	else if(selectedCountries.includes(d.properties.name) || selectedCountriesNotHost.includes(d.properties.name))
 		updateLineChart("General", d.properties.name);
-	}
-		else {
-		console.log("olaaa")
+	
+	else 
 		deleteLine(d.properties.name)
-	}
+	
 	var data_aux;
 	if (selectedCountries.length != 0 || selectedCountriesNotHost != 0) {
 		for (i = 0; i < selectedCountries.length; i++) {
@@ -1203,7 +1187,6 @@ function deleteLine(country){
 		return d;
 	})
 	path = "#"+data1[0].NOC
-	console.log(path)
 	d3.select("div#secondLine").selectAll(path).remove()
 }
 
