@@ -90,22 +90,22 @@ body{
     margin-top: 3px;
 }
 
-#women{
+#womenbutton{
     background-color: #ff1493;
     color: white;
     border-radius: 10px;
-    top : 520px;
-    left: 10px;
+    top : -5%;
+    left: -135%;
     margin-left: 50px;
-    position: absolute;
+    position: relative;
 }
 
-#general{
+#generalbutton{
     background-color: #444444;
     color: white;
     border-radius: 10px;
-    top : 520px;
-    left: 70px;
+    top : -10%;
+    left: -22%;
     margin-left: 50px;
-    position: absolute;
+    position: relative;
 }

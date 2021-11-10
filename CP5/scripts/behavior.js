@@ -307,7 +307,7 @@ function triggerTransitionDelay() {
 
 function createLineChart(data, group, value) {
 	width = window.innerWidth / 2.1;
-	height = window.innerHeight * 0.36;
+	height = window.innerHeight * 0.335;
 
 	margin = { top: 20, right: 40, bottom: 31, left: 50 };
 

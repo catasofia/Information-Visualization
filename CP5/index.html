@@ -24,14 +24,18 @@
 </head>
 <body onload="init()">
 	<p>The Olympic Games and How Being The Host Affects the Difference of Medalists</p>
-	<button id="women" onclick="update('Women')">Women</button>
-	<button id="general" onclick="update('General')">General</button>
 	<div id="choropleth"></div>
 	<div id="progressBar">
 		<p>Percentage of Women and Men Medalists</p>
 	</div>
 	<div id="secondLine">
 		<p>Evolution of Participants per Year</p>
+		<div id="General">
+			<button id="generalbutton" onclick="update('General')">General</button>
+		</div>
+		<div id="Women">
+			<button id="womenbutton" onclick="update('Women')">Women</button>
+		</div>
 	</div>
 	<div id="clevelandMedalsP">
 		<p>Participants and Medalists Difference per NOC</p>
