@@ -1006,17 +1006,13 @@ function handleMouseClick(event, d) {
 	linechart = d3.select("div#secondLine").select("svg");
 	cleveland1 = d3.select("div#clevelandMedalsP").select("svg");
 	cleveland2 = d3.select("div#clevelandMedalsG").select("svg");
-	console.log(selectedCountriesNotHost)
-	console.log(selectedCountries)
-	console.log(nrCountries)
 	
-	if(nrCountries == 4 && selectedCountriesNotHost.includes(d.properties.name) && selectedCountries.includes(d.properties)) {
-		console.log("oiii")
+	if(nrCountries == 4 && !selectedCountriesNotHost.includes(d.properties.name) && !selectedCountries.includes(d.properties.name)) {
 		window.alert("Impossible to select more than 4 countries")
 		return;
 	} 
 
-	if(!selectedCountries.includes(d.properties.name) && !selectedCountriesNotHost.includes(d.properties.name)){
+	if(!countriesNotHost.includes(d.properties.name) && !countriesHost.includes(d.properties.name)){
 		return;
 	}
 
