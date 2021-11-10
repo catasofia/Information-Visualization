@@ -305,10 +305,6 @@ function triggerTransitionDelay() {
 	}
 }
 
-/* function deleteLine(){
-	d3.select("div#secondLine").select("path.line").remove()
-} */
-
 function createLineChart(data, group, value) {
 	width = window.innerWidth / 2.1;
 	height = window.innerHeight * 0.36;
@@ -341,17 +337,22 @@ function createLineChart(data, group, value) {
 		.scaleLinear()
 		.domain([1896, 2016])
 		.range([margin.left, width - 20]);
-
-	y = d3
-		.scaleLinear()
-		.domain([0, d3.max(data, (d) => d.ParticipantsEvolution)])
-		.range([height - margin.bottom, margin.top]);
-
+	if(value || nrCountries == 0){
+		y = d3
+			.scaleLinear()
+			.domain([0, d3.max(data, (d) => d.ParticipantsEvolution)])
+			.range([height - margin.bottom, margin.top]);
+	}
+	else{
+		y = d3
+			.scaleLinear()
+			.domain([0, 1100])
+			.range([height - margin.bottom, margin.top]);
+	}
 
 	var years = [];
 	dataset.forEach(function (d) {
 		years.push(d.Year);
-		console.log(years)
 	})
 
 	xAxis = (g) =>
@@ -538,6 +539,7 @@ function updateLineChart(group, country) {
 			if (d.Country == country)
 				return d;
 	})
+	console.log(dataEvolution1)
 	createLineChart(dataEvolution1, group, false)
 }
 
@@ -841,6 +843,7 @@ function handleClevelandClick(event, d) {
 			selectedCountries.forEach(function (c) {
 				if (c == d.Country) {
 					var newlist = [];
+					nrCountries--;
 					newlist.push(d.Country);
 					selectedCountries = selectedCountries.filter(function (el) {
 						return !newlist.includes(el);
@@ -848,13 +851,16 @@ function handleClevelandClick(event, d) {
 				}
 			})
 		}
-		else
+		else{
 			selectedCountries.push(d.Country);
+			nrCountries++;
+			}
 	} else {
 		if (selectedCountriesNotHost.includes(d.Country)) {
 			selectedCountriesNotHost.forEach(function (c) {
 				if (c == d.Country) {
 					var newlist = [];
+					nrCountries--;
 					newlist.push(d.Country);
 					selectedCountriesNotHost = selectedCountriesNotHost.filter(function (el) {
 						return !newlist.includes(el);
@@ -862,9 +868,22 @@ function handleClevelandClick(event, d) {
 				}
 			})
 		}
-		else
+		else{
 			selectedCountriesNotHost.push(d.Country);
+			nrCountries++;
+		}
 	}
+
+	if (selectedCountries.length == 0 && selectedCountriesNotHost.length == 0){
+		createLineChart(dataset, "General", false);
+		deleteLine(d.Country)
+	}
+	else if(selectedCountries.includes(d.Country) || selectedCountriesNotHost.includes(d.Country))
+		updateLineChart("General", d.Country);
+	
+	else 
+		deleteLine(d.Country)
+
 	createClevelandMedalsPerPart(datastats);
 	createClevelandMedalsPerGender(datastats);
 }
@@ -987,6 +1006,19 @@ function handleMouseClick(event, d) {
 	linechart = d3.select("div#secondLine").select("svg");
 	cleveland1 = d3.select("div#clevelandMedalsP").select("svg");
 	cleveland2 = d3.select("div#clevelandMedalsG").select("svg");
+	console.log(selectedCountriesNotHost)
+	console.log(selectedCountries)
+	console.log(nrCountries)
+	
+	if(nrCountries == 4 && selectedCountriesNotHost.includes(d.properties.name) && selectedCountries.includes(d.properties)) {
+		console.log("oiii")
+		window.alert("Impossible to select more than 4 countries")
+		return;
+	} 
+
+	if(!selectedCountries.includes(d.properties.name) && !selectedCountriesNotHost.includes(d.properties.name)){
+		return;
+	}
 
 	cleveland1.remove()
 	cleveland2.remove()
@@ -1108,15 +1140,13 @@ function handleMouseClick(event, d) {
 					selectedCountries.push(d.properties.name);
 					return d.properties.name;
 				}
-
-			} else if (selectedCountries.includes(c.Country)) {
-				nrCountries++;
-				selectedCountries.push(d.properties.name);
-				return d.properties.name;
 			}
 		})
-
+	
 	}
+
+	
+
 
 	if (selectedCountriesNotHost.includes(d.properties.name) && !countriesHost.includes(d.properties.name)) {
 		for (i = 0; i < selectedCountriesNotHost.length; i++) {
@@ -1137,10 +1167,6 @@ function handleMouseClick(event, d) {
 				selectedCountriesNotHost.push(d.properties.name);
 				return d.properties.name;
 
-			} else if (selectedCountriesNotHost.includes(c.Country)) {
-				nrCountries++;
-				selectedCountriesNotHost.push(d.properties.name);
-				return d.properties.name;
 			}
 		})
 
