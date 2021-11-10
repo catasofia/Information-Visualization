@@ -14,6 +14,8 @@ var colorScale;
 var nrCountries = 0;
 var lineg;
 var dataset;
+var progress_w = ["#progressw_1", "#progressw_2", "#progressw_3", "#progressw_4"];
+var progress_m = ["#progressm_1", "#progressm_2", "#progressm_3", "#progressm_4"];
 
 function init() {
 	Promise.all([d3.json(map), d3.json("data/newjson_0.js"), d3.json(stats), d3.json(evolution)]).then(function ([map, data, stats, evolution]) {
@@ -888,29 +890,78 @@ function handleClevelandClick(event, d) {
 	createClevelandMedalsPerGender(datastats);
 }
 
-function createProgressBar(country, women, flag) {
+function createProgressBar(country, women, flag, i) {
 
 	const width = window.innerWidth * 0.445;
 	height = window.innerHeight * 0.383;
 
-	const radius = 50;
+	const radius = 30;
 
-	if (flag) {
+	if(flag){
 		svg = d3.select("div#progressBar")
-			.append("svg")
-			.attr("width", width)
-			.attr("height", height)
-			.append("g")
-			.attr("transform", `translate(${width / 2},${height / 2})`);
+		.select("#progressw_1")
+		.append("svg")
+		.attr("width", width/8)
+		.attr("height", height/2)
+		
+		svg = d3.select("div#progressBar")
+		.select("#progressw_2")
+		.append("svg")
+		.attr("width", width/8)
+		.attr("height", height/2)
+		.append("g")
+
+		svg = d3.select("div#progressBar")
+		.select("#progressw_3")
+		.append("svg")
+		.attr("width", width/8)
+		.attr("height", height/2)
+		.append("g")
+
+		svg = d3.select("div#progressBar")
+		.select("#progressw_4")
+		.append("svg")
+		.attr("width", width/8)
+		.attr("height", height/2)
+		.append("g")
+
+		svg = d3.select("div#progressBar")
+		.select("#progressm_1")
+		.append("svg")
+		.attr("width", width/8)
+		.attr("height", height/2.5)
+		
+		svg = d3.select("div#progressBar")
+		.select("#progressm_2")
+		.append("svg")
+		.attr("width", width/8)
+		.attr("height", height/2)
+		.append("g")
+
+		svg = d3.select("div#progressBar")
+		.select("#progressm_3")
+		.append("svg")
+		.attr("width", width/8)
+		.attr("height", height/2)
+		.append("g")
+
+		svg = d3.select("div#progressBar")
+		.select("#progressm_4")
+		.append("svg")
+		.attr("width", width/8)
+		.attr("height", height/2)
+		.append("g")
 	}
 
-	svg = d3.select("#progressBar")
+	
+	if (women) {
+		svg = d3.select("div#progressBar")
+		.select(progress_w[i])
 		.select("svg")
 
-	const pie = d3.pie()
+		const pie = d3.pie()
 		.value(d => d[1])
 
-	if (women) {
 		const stroke = d3.scaleOrdinal()
 			.range(["#b94366", "#ffe6ee"])
 
@@ -919,12 +970,17 @@ function createProgressBar(country, women, flag) {
 
 		const data_aux = pie([['pais', country.PercWomenMedalists], ['', 100 - country.PercWomenMedalists]])
 
+		svg.append("text")
+		.text(country.NOC)
+		.attr("font-size", "10px")
+		.attr("transform", `translate(${width/24},${height/16})`);
+
 		svg
 			.selectAll('progress')
 			.data(data_aux)
 			.join('path')
 			.attr('d', d3.arc()
-				.innerRadius(30)
+				.innerRadius(20)
 				.outerRadius(radius)
 			)
 			.attr('fill', d => fill(d.data))
@@ -932,11 +988,25 @@ function createProgressBar(country, women, flag) {
 			.style("stroke", d => stroke(d.data))
 			.style("stroke-width", 2)
 
+
+		svg.selectAll('path')
+			.attr("transform", `translate(${width/16},${height/4})`);
+
 		svg.append("text")
 			.attr("text-anchor", "middle")
+			.transition()
+			.duration(200)
 			.text(country.PercWomenMedalists + "%")
-			.attr("font-size", "15px");
+			.attr("font-size", "10px")
+			.attr("transform", `translate(${width/16},${height/4})`);
+
 	} else {
+		svg = d3.select("div#progressBar")
+		.select(progress_m[i])
+		.select("svg")
+
+		const pie = d3.pie()
+		.value(d => d[1])
 
 		const stroke = d3.scaleOrdinal()
 			.range(["#23395d", "#b1f2ff"])
@@ -951,7 +1021,7 @@ function createProgressBar(country, women, flag) {
 			.data(data_aux)
 			.join('path')
 			.attr('d', d3.arc()
-				.innerRadius(30)
+				.innerRadius(20)
 				.outerRadius(radius)
 			)
 			.attr('fill', d => fill(d.data))
@@ -959,10 +1029,18 @@ function createProgressBar(country, women, flag) {
 			.style("stroke", d => stroke(d.data))
 			.style("stroke-width", 2)
 
+		svg.selectAll('path')
+			.transition()
+			.duration(200)
+			.attr("transform", `translate(${width/16},${height/6})`);
+
 		svg.append("text")
+			.transition()
+			.duration(200)
 			.attr("text-anchor", "middle")
 			.text(country.PercMenMedalists + "%")
-			.attr("font-size", "15px");
+			.attr("font-size", "10px")
+			.attr("transform", `translate(${width/16},${height/6})`);
 	}
 }
 
@@ -1186,21 +1264,34 @@ function handleMouseClick(event, d) {
 	else 
 		deleteLine(d.properties.name)
 	
-	var data_aux;
-	if (selectedCountries.length != 0 || selectedCountriesNotHost != 0) {
-		for (i = 0; i < selectedCountries.length; i++) {
-			if (selectedCountries[i] == d.properties.name) {
-				datastats.forEach(function (c) {
-					if (c.Country === d.properties.name) {
-						data_aux = c;
-						return c;
-					}
-				})
-				createProgressBar(data_aux, true, false);
-				createProgressBar(data_aux, false, false);
+		var data_aux;
+		if (selectedCountries.length != 0 || selectedCountriesNotHost != 0) {
+			for (i = 0; i < selectedCountries.length; i++) {
+				if (selectedCountries[i] == d.properties.name) {
+					datastats.forEach(function (c) {
+						if (c.Country === d.properties.name) {
+							data_aux = c;
+							createProgressBar(data_aux, true, false, i);
+							createProgressBar(data_aux, false, false, i);
+							return c;
+						}
+					})
+				}
 			}
-		}
-	}
+	
+			for (i = 0; i < selectedCountriesNotHost.length; i++) {
+				if (selectedCountriesNotHost[i] == d.properties.name) {
+					datastats.forEach(function (c) {
+						if (c.Country === d.properties.name) {
+							data_aux = c;
+							createProgressBar(data_aux, true, false, i);
+							createProgressBar(data_aux, false, false, i);
+							return c;
+						}
+					})
+				}
+			}
+		} 
 }
 
 function deleteLine(country){
