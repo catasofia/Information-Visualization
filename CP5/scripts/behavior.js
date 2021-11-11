@@ -17,7 +17,7 @@ var lineg;
 var dataset;
 var progress_w = ["#progressw_1", "#progressw_2", "#progressw_3", "#progressw_4"];
 var progress_m = ["#progressm_1", "#progressm_2", "#progressm_3", "#progressm_4"];
-var colorMen = ["false", "false", "false", "false"]
+var colorPosition = [false, false, false, false]
 
 function init() {
 	Promise.all([d3.json(map), d3.json("data/newjson_0.js"), d3.json(stats), d3.json(evolution)]).then(function ([map, data, stats, evolution]) {
@@ -314,6 +314,7 @@ function triggerTransitionDelay() {
 }
 
 function createLineChart(data, group, value) {
+	var nameOfLine;
 	selectedGroup = group
 	width = window.innerWidth / 2.1;
 	height = window.innerHeight * 0.335;
@@ -446,32 +447,34 @@ function createLineChart(data, group, value) {
 				if (value || (selectedCountries.length == 0 && selectedCountriesNotHost.length == 0)) return "#444444"
 				else {
 					var color = null
-					console.log(color)
-					for (i = 0; i < colorMen.length; i++) {
-						console.log(colorMen[i])
-						if (colorMen[i] == "false" && color == null) {
-							console.log(i)
-							colorMen[i] = "true"
+					for (i = 0; i < colorPosition.length; i++) {
+						console.log("i" + i)
+						console.log(colorPosition[i])
+						if (!colorPosition[i] && color == null) {
+							colorPosition[i] = true
 							color = colorScaleMen(i + 1)
 						}
 					}
-					console.log(color)
 					return color
 				}
 			})
 			.on("click", handleClickLine)
 			.attr("stroke-width", 2)
 			.attr("id", function (d) {
-				console.log(nrCountries)
-				if (nrCountries == 0) return "general"
-				else return data[0].NOC
+				if (nrCountries == 0){ 
+					nameOfLine = "#general"
+					return "general"
+				}
+				else {
+					nameOfLine = "#" + data[0].NOC
+					return data[0].NOC}
 			})
 			.attr("class", "line")
 			.attr("fill", "none")
 			.attr("d", line)
 		selectedGroup = "General";
 		svg
-			.selectAll(".line")
+			.select(nameOfLine)
 			.selectAll("circle")
 			.data(data, function (d) {
 				return d.Year;
@@ -521,13 +524,26 @@ function createLineChart(data, group, value) {
 			.duration(3000) */
 			.attr("stroke", function (d) {
 				if (value || (selectedCountries.length == 0 && selectedCountriesNotHost.length == 0)) return "#ff1493"
-				else return colorScaleWomen(nrCountries)
+				else {
+					var color = null
+					for (i = 0; i < colorPosition.length; i++) {
+						if (!colorPosition[i] && color == null) {
+							colorPosition[i] = true
+							color = colorScaleWomen(i + 1)
+						}
+					}
+					return color
+				}
 			})
 			.attr("stroke-width", 2)
 			.attr("id", function (d) {
-				console.log(data)
-				if (nrCountries == 0) return "women"
-				else return data[0].NOC
+				if (nrCountries == 0){ 
+					nameOfLine = "#women"
+					return "women"
+				}
+				else {
+					nameOfLine = "#" + data[0].NOC
+					return data[0].NOC}
 			})
 			.attr("class", "line")
 			.attr("fill", "none")
@@ -535,7 +551,7 @@ function createLineChart(data, group, value) {
 			.on("click", handleClickLine)
 		selectedGroup = "Women";
 		svg
-			.select("g.line")
+			.select(nameOfLine)
 			.selectAll("circle")
 			.data(data, function (d) {
 				return d.Year;
@@ -587,7 +603,6 @@ function updateLineChart(group, country) {
 			if (d.Country == country)
 				return d;
 	})
-	console.log(dataEvolution1)
 	createLineChart(dataEvolution1, group, false)
 }
 
@@ -924,17 +939,12 @@ function handleClevelandClick(event, d) {
 
 	if (selectedCountries.length == 0 && selectedCountriesNotHost.length == 0) {
 		createLineChart(dataset, "General", false);
-		console.log("ifkjndc")
-		console.log(nrCountries)
 		deleteLine(d.Country)
 	}
 	else if (selectedCountries.includes(d.Country) || selectedCountriesNotHost.includes(d.Country)) {
-		console.log("hieloooooooooo")
 		updateLineChart("General", d.Country);
 	}
 	else {
-		console.log("oekndsx")
-		console.log(nrCountries)
 		deleteLine(d.Country)
 	}
 	createClevelandMedalsPerPart(datastats);
@@ -1248,6 +1258,8 @@ function handleMouseClick(event, d) {
 	if (selectedCountries.includes(d.properties.name) && countriesHost.includes(d.properties.name)) {
 		for (i = 0; i < selectedCountries.length; i++) {
 			if (selectedCountries[i] === d.properties.name) {
+				colorPosition[i] = false
+				deleteLine(d.properties.name)
 				nrCountries--;
 				var newlist = [];
 				newlist.push(d.properties.name);
@@ -1273,6 +1285,8 @@ function handleMouseClick(event, d) {
 	if (selectedCountriesNotHost.includes(d.properties.name) && !countriesHost.includes(d.properties.name)) {
 		for (i = 0; i < selectedCountriesNotHost.length; i++) {
 			if (selectedCountriesNotHost[i] === d.properties.name) {
+				colorPosition[i] = false
+				deleteLine(d.properties.name)
 				nrCountries--;
 				var newlist = [];
 				newlist.push(d.properties.name);
@@ -1308,8 +1322,7 @@ function handleMouseClick(event, d) {
 			createLineChart(dataset, "General", false);
 		else if (selectedGroup == "Women")
 			createLineChart(dataset, "General", false);
-		console.log("aqyuuuu")
-		deleteLine(d.properties.name)
+		
 	}
 	else if (selectedCountries.includes(d.properties.name) || selectedCountriesNotHost.includes(d.properties.name)) {
 		if (selectedGroup == "General")
@@ -1318,7 +1331,6 @@ function handleMouseClick(event, d) {
 			updateLineChart("Women", d.properties.name)
 	}
 	else {
-		console.log("oiiiiiiiiii")
 		deleteLine(d.properties.name)
 	}
 	var data_aux;
@@ -1351,7 +1363,6 @@ function handleMouseClick(event, d) {
 	}
 }
 function deleteLine(country) {
-	console.log(selectedCountries)
 	data1 = dataEvolution.filter(function (d) {
 		if (d.Country == country)
 			return d;
@@ -1365,7 +1376,6 @@ function handleClickLine(event, d) {
 	linechart = d3.select("div#secondLine").select("svg");
 
 	if (selectedCountries.includes(d[0].Country)) {
-		console.log("i mean what")
 		choropleth
 			.selectAll("path")
 			.filter(function (c) {
@@ -1396,7 +1406,6 @@ function handleClickLine(event, d) {
 			})
 			.style("stroke-width", 3);
 	} else {
-		console.log("estou bem?")
 		choropleth
 			.selectAll("path")
 			.filter(function (c) {
@@ -1416,11 +1425,11 @@ function handleClickLine(event, d) {
 	if (selectedCountries.includes(d[0].Country)) {
 		for (i = 0; i < selectedCountries.length; i++) {
 			if (selectedCountries[i] === d[0].Country) {
-				console.log("indcksxz")
+				colorPosition[i] = false
+				deleteLine(d[0].Country)
 				var newlist = [];
 				newlist.push(d[0].Country);
 				nrCountries--;
-				deleteLine(d[0].Country)
 				selectedCountries = selectedCountries.filter(function (el) {
 					return !newlist.includes(el);
 				});
@@ -1478,8 +1487,6 @@ function handleClickLine(event, d) {
 		if (selectedCountries.length == 0 && selectedCountriesNotHost.length == 0)
 			createLineChart(dataset, "General", false);
 		else {
-			console.log("adios ")
-			console.log(nrCountries)
 			updateLineChart("General", d[0].Country);
 		}
 		triggerTransitionDelay();
@@ -1523,7 +1530,6 @@ function handleClickLine(event, d) {
 		if (selectedCountries.length == 0 && selectedCountriesNotHost.length == 0)
 			createLineChart(dataset, "Women", false);
 		else {
-			console.log("hielllooooooooooooooooooo")
 			updateLineChart("Women");
 		}
 		triggerTransitionDelay();
@@ -1545,13 +1551,17 @@ function update(selectedGroup) {
 			if (selectedCountries.length == 0 && selectedCountriesNotHost.length == 0)
 				createLineChart(dataset, "Women", false);
 			else {
-				for (const i of selectedCountries) {
-					deleteLine(i)
-					updateLineChart("Women", i);
+				console.log(selectedCountries.length)
+				for (i = 0; i < selectedCountries.length; i++) {
+					console.log("quantas vezes??")
+					colorPosition[i] = false
+					deleteLine(selectedCountries[i])
+					updateLineChart("Women", selectedCountries[i]);		
 				}
-				for (const i of selectedCountriesNotHost) {
-					deleteLine(i)
-					updateLineChart("Women", i);
+				for (i = 0; i < selectedCountriesNotHost.length; i++) {
+					colorPosition[i] = false
+					deleteLine(selectedCountriesNotHost[i])
+					updateLineChart("Women", selectedCountriesNotHost[i]);		
 				}
 			}
 			triggerTransitionDelay();
