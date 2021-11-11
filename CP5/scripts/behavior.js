@@ -63,7 +63,7 @@ function createListCountries() {
 		countries.push(i.Country);
 	})
 
-	var dropdownButton = d3.select("#progressBar")
+	var dropdownButton = d3.select("#selectButton")
 		.append('select')
 
 	dropdownButton
@@ -71,8 +71,123 @@ function createListCountries() {
 		.data(countries)
 		.enter()
 		.append('option')
-		.text(function (d) { return d; })
 		.attr("value", function (d) { return d; })
+		.text(function (d) { return d; })
+
+	d3.select("#selectButton").on("change" ,function(d) {
+		var selectedOption = d3.select("#selectButton option:checked").property("value") ;
+		handleSelectClick( selectedOption );
+		} )
+}
+
+function handleSelectClick( selectedOption){
+	console.log(selectedOption);
+
+	choropleth = d3.select("div#choropleth").select("svg")
+	linechart = d3.select("div#secondline").select("svg")
+	cleveland1 = d3.select("div#clevelandMedalsP").select("svg")
+	cleveland2 = d3.select("div#clevelandMedalsG").select("svg")
+
+	cleveland1.remove()
+	cleveland2.remove()
+
+	if (selectedCountries.includes(selectedOption) || selectedCountriesNotHost.includes(selectedOption)) {
+		choropleth
+			.selectAll("path")
+			.filter(function (c) {
+				if (selectedOption == c.properties.name)
+					return c;
+			})
+			.style("stroke-width", 1);
+	}
+	else if (!selectedCountries.includes(selectedOption) && !selectedCountriesNotHost.includes(selectedOption)) {
+		choropleth
+			.selectAll("path")
+			.filter(function (c) {
+				if (selectedOption == c.properties.name)
+					return c;
+			})
+			.style("stroke-width", 3);
+	}
+
+	if (countriesHost.includes(selectedOption)) {
+		if (selectedCountries.includes(selectedOption)) {
+			selectedCountries.forEach(function (c) {
+				if (c == selectedOption) {
+					var newlist = [];
+					nrCountries--;
+					newlist.push(selectedOption);
+					selectedCountries = selectedCountries.filter(function (el) {
+						return !newlist.includes(el);
+					});
+				}
+			})
+		}
+		else {
+			selectedCountries.push(selectedOption);
+			nrCountries++;
+		}
+	} else {
+		if (selectedCountriesNotHost.includes(selectedOption)) {
+			selectedCountriesNotHost.forEach(function (c) {
+				if (c == selectedOption) {
+					var newlist = [];
+					nrCountries--;
+					newlist.push(selectedOption);
+					selectedCountriesNotHost = selectedCountriesNotHost.filter(function (el) {
+						return !newlist.includes(el);
+					});
+				}
+			})
+		}
+		else {
+			selectedCountriesNotHost.push(selectedOption);
+			nrCountries++;
+		}
+	}
+
+	if (selectedCountries.length == 0 && selectedCountriesNotHost.length == 0) {
+		createLineChart(dataset, "General", false);
+		deleteLine(selectedOption)
+	}
+	else if (selectedCountries.includes(selectedOption) || selectedCountriesNotHost.includes(selectedOption)) {
+		updateLineChart("General", selectedOption);
+	}
+	else {
+		deleteLine(selectedOption)
+	}
+	createClevelandMedalsPerPart(datastats);
+	createClevelandMedalsPerGender(datastats);
+
+	var data_aux;
+	if (selectedCountries.length != 0 || selectedCountriesNotHost != 0) {
+		for (i = 0; i < selectedCountries.length; i++) {
+			if (selectedCountries[i] == selectedOption) {
+				datastats.forEach(function (c) {
+					if (c.Country === selectedOption) {
+						data_aux = c;
+						createProgressBar(data_aux, true, false, i);
+						createProgressBar(data_aux, false, false, i);
+						return c;
+					}
+				})
+			}
+		}
+
+		for (i = 0; i < selectedCountriesNotHost.length; i++) {
+			if (selectedCountriesNotHost[i] == selectedOption) {
+				datastats.forEach(function (c) {
+					if (c.Country === selectedOption) {
+						data_aux = c;
+						createProgressBar(data_aux, true, false, i);
+						createProgressBar(data_aux, false, false, i);
+						return c;
+					}
+				})
+			}
+		}
+	}
+
 }
 
 function createChoroplethMap() {
@@ -1146,6 +1261,7 @@ function handleMouseClick(event, d) {
 	cleveland1 = d3.select("div#clevelandMedalsP").select("svg");
 	cleveland2 = d3.select("div#clevelandMedalsG").select("svg");
 
+
 	if (nrCountries == 4 && !selectedCountriesNotHost.includes(d.properties.name) && !selectedCountries.includes(d.properties.name)) {
 		window.alert("Impossible to select more than 4 countries")
 		return;
@@ -1362,6 +1478,7 @@ function handleMouseClick(event, d) {
 		}
 	}
 }
+
 function deleteLine(country) {
 	data1 = dataEvolution.filter(function (d) {
 		if (d.Country == country)
