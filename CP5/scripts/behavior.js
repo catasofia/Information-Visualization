@@ -253,8 +253,8 @@ function createChoroplethMap() {
 		.on("mouseleave", handleMouseLeave)
 		.on("mousemove", function (event, d) {
 			tooltip
-			.style("left", event.pageX + "px")
-			.style("top", event.pageY - 28 + "px");
+				.style("left", event.pageX + "px")
+				.style("top", event.pageY - 28 + "px");
 		})
 		.on("click", handleMouseClick)
 		.attr("id", function (d, i) {
@@ -436,6 +436,7 @@ function triggerTransitionDelay() {
 }
 
 function createLineChart(data, group, value) {
+	var color = null
 	var nameOfLine;
 	selectedGroup = group
 	width = window.innerWidth / 2.1;
@@ -487,13 +488,13 @@ function createLineChart(data, group, value) {
 	if (value || nrCountries == 0) {
 		y = d3
 			.scaleLinear()
-			.domain([0, d3.max(data, (d) => d.ParticipantsEvolution)])
+			.domain([0, 13000])
 			.range([height - margin.bottom, margin.top]);
 	}
 	else if (selectedGroup == "General") {
 		y = d3
 			.scaleLinear()
-			.domain([0, 1100])
+			.domain([0, 1500])
 			.range([height - margin.bottom, margin.top]);
 	}
 	else if (selectedGroup == "Women") {
@@ -576,9 +577,9 @@ function createLineChart(data, group, value) {
 			/* .transition()
 			.duration(3000) */
 			.attr("stroke", function (d) {
+				console.log(d)
 				if (value || (selectedCountries.length == 0 && selectedCountries.length == 0)) return "#444444"
 				else {
-					var color = null
 					for (i = 0; i < colorPosition.length; i++) {
 						if (!colorPosition[i] && color == null) {
 							colorPosition[i] = true
@@ -605,8 +606,8 @@ function createLineChart(data, group, value) {
 			})
 			.on("mousemove", function (event, d) {
 				tooltip_l
-				.style("left", event.pageX + "px")
-				.style("top", event.pageY - 28 + "px");
+					.style("left", event.pageX + "px")
+					.style("top", event.pageY - 28 + "px");
 			})
 			.attr("stroke-width", 2)
 			.attr("id", function (d) {
@@ -622,22 +623,80 @@ function createLineChart(data, group, value) {
 			.attr("class", "line")
 			.attr("fill", "none")
 			.attr("d", line)
+		var xCPosition;
+		var yCPosition;
+		var xTPosition;
+		var yTPosition;
+
+		if(value || selectedCountries.length == 0 || selectedCountries.length == 1){
+			xCPosition = 0.055
+			yCPosition = 0.02
+			xTPosition = 0.06
+			yTPosition = 0.025
+		}
+
+		else{
+			xCPosition = 0.055 + nrCountries * 0.025
+			yCPosition = 0.02
+			xTPosition = 3
+			yTPosition = 0.025
+		}
+
+		svg.selectAll("mydots")
+			.data(data)
+			.enter()
+			.append("circle")
+			.attr("cx", window.innerWidth * xCPosition)
+			.attr("cy", window.innerHeight * yCPosition) 
+			.attr("r", 7)
+			.style("fill", function (d) { return color })
+
+		if (selectedCountries.length == 0) {
+			svg
+				.selectAll("myLegend")
+				.data(data)
+				.enter()
+				.append('g')
+				.append("text")
+				.attr('x', window.innerWidth * xTPosition)
+				.attr('y', window.innerHeight * yTPosition)
+				.text(function (d) { return "General" })
+				.attr("id", "general")
+				.style("fill", function (d) { return "color"; })
+				.style("font-size", "15px")
+				.style("font-family", "sans-serif")
+		}
+		else {
+			svg
+				.selectAll("myLegend")
+				.data(data)
+				.enter()
+				.append('g')
+				.append("text")
+				.attr('x', window.innerWidth * 0.06)
+				.attr('y', window.innerHeight * 0.025)
+				.text(function (d) { return d.Country; })
+				.attr("id", data[0].NOC)
+				.style("fill", function (d) { return color; })
+				.style("font-size", 15)
+		}
+
 		selectedGroup = "General";
 		var selectCircle =
 			svg
 				.selectAll(".circle")
 				.data(data)
-		console.log("data")
-		console.log(data)
+				
 		selectCircle.enter().append("circle")
 			.attr("class", "circle")
 			.attr("r", 3.5)
 			.attr("id", nameOfLine)
 			.attr("cx", function (d) {
-				if(d.ParticipantsEvolution != null)
-					return x(d.Year)})
-			.attr("cy", function(d){
-				if(d.ParticipantsEvolution != null)
+				if (d.ParticipantsEvolution != null)
+					return x(d.Year)
+			})
+			.attr("cy", function (d) {
+				if (d.ParticipantsEvolution != null)
 					return y(d.ParticipantsEvolution)
 			})
 			.on("mouseover", function (event, d) {
@@ -664,7 +723,6 @@ function createLineChart(data, group, value) {
 			.attr("stroke", function (d) {
 				if (value || (selectedCountries.length == 0 && selectedCountries.length == 0)) return "#ff1493"
 				else {
-					var color = null
 					for (i = 0; i < colorPosition.length; i++) {
 						if (!colorPosition[i] && color == null) {
 							colorPosition[i] = true
@@ -706,8 +764,8 @@ function createLineChart(data, group, value) {
 			})
 			.on("mousemove", function (event, d) {
 				tooltip_l
-				.style("left", event.pageX + "px")
-				.style("top", event.pageY - 28 + "px");
+					.style("left", event.pageX + "px")
+					.style("top", event.pageY - 28 + "px");
 			})
 		selectedGroup = "Women";
 		svg
@@ -1805,6 +1863,8 @@ function handleClickLine(event, d) {
 	choropleth = d3.select("div#choropleth").select("svg");
 	linechart = d3.select("div#secondLine").select("svg");
 	progress = d3.select("div#progressBar").selectAll("svg");
+	cleveland1 = d3.select("div#clevelandMedalsP").select("svg");
+	cleveland2 = d3.select("div#clevelandMedalsG").select("svg");
 
 	progress.remove()
 	nrNocsM = 0;
@@ -1825,6 +1885,8 @@ function handleClickLine(event, d) {
 		}
 	}
 
+	cleveland1.remove()
+	cleveland2.remove()
 
 	if (selectedCountries.includes(d[0].Country)) {
 		choropleth
@@ -1949,7 +2011,7 @@ function handleClickLine(event, d) {
 	}
 	else {
 		linechart
-			.selectAll("line")
+			.select("line")
 			.selectAll("circle")
 			.data(dataset1, function (i) {
 				return i.Year;
@@ -1962,9 +2024,7 @@ function handleClickLine(event, d) {
 						.attr("cy", (d) => y(d.WomenEvolution))
 						.attr("r", 5)
 						.style("fill", function (d) {
-							if (selectedCountries.includes(d[0].Country))
-								return "#6c9dc4";
-							else return "blue";
+							return "blue"
 						})
 				},
 				(update) => {
@@ -1973,24 +2033,23 @@ function handleClickLine(event, d) {
 						.attr("cx", (d) => x(d.Year))
 						.attr("cy", (d) => y(d.WomenEvolution))
 						.attr("r", 5)
-						.style("fill", function (d) {
-							if (selectedCountries.includes(d[0].Country))
-								return "#6c9dc4";
-							else return "blue";
-						})
 				},
 				(exit) => {
 					exit.remove();
 				});
 
+
 		if (selectedCountries.length == 0 && selectedCountries.length == 0) {
-			createLineChart(dataset, "Women", false);
 			createProgressBar("", "", true);
+			createLineChart(dataset, "Women", false);
 		}
 		else {
-			updateLineChart("Women");
+			updateLineChart("Women", d[0].Country);
 		}
 	}
+
+	createClevelandMedalsPerPart(datastats);
+	createClevelandMedalsPerGender(datastats);
 
 	data_aux = datastats.filter(function (d) {
 		if (selectedCountries.includes(d.Country) || selectedCountries.includes(d.Country))
@@ -2036,10 +2095,6 @@ function update(selectedGroup) {
 				for (const iter of selectedCountries) {
 					deleteLine(iter)
 					updateLineChart("Women", iter);
-				}
-				for (const e of selectedCountries) {
-					deleteLine(e)
-					updateLineChart("Women", e);
 				}
 			}
 			break;
