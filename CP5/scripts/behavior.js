@@ -22,6 +22,9 @@ var progSvg = false;
 var tooltip;
 var tooltip_cl;
 var tooltip_clg;
+var tooltip_p;
+var tooltip_lc;
+var tooltip_l;
 
 function init() {
 	Promise.all([d3.json(map), d3.json("data/newjson_0.js"), d3.json(stats), d3.json(evolution)]).then(function ([map, data, stats, evolution]) {
@@ -434,6 +437,16 @@ function createLineChart(data, group, value) {
 
 	margin = { top: 20, right: 40, bottom: 31, left: 50 };
 
+	tooltip_lc = d3.select("body")
+			.append("div")
+			.attr("class", "tooltip_lc")
+			.style("opacity", 0)
+
+	tooltip_l = d3.select("body")
+		.append("div")
+		.attr("class", "tooltip_l")
+		.style("opacity", 0)
+
 	line = d3
 		.line()
 		.defined(function (d) {
@@ -570,6 +583,20 @@ function createLineChart(data, group, value) {
 				}
 			})
 			.on("click", handleClickLine)
+			.on("mouseover", function (event, d) {
+				if(nrCountries != 0){
+				tooltip_l.transition().duration(200).style("opacity", 0.9);
+				tooltip_l
+				  .html(function () {
+						return "Country:<br>" + data[0].Country; 
+					})
+				  .style("left", event.pageX + "px")
+				  .style("top", event.pageY - 28 + "px");
+				}
+		})
+		.on("mouseleave", function (d) {
+			tooltip_l.transition().duration(200).style("opacity", 0);
+		})
 			.attr("stroke-width", 2)
 			.attr("id", function (d) {
 				if (nrCountries == 0) {
@@ -616,6 +643,20 @@ function createLineChart(data, group, value) {
 				}
 			}
 		})
+		.on("mouseover", function (event, d) {
+				tooltip_lc.transition().duration(200).style("opacity", 0.9);
+				tooltip_lc
+				  .html(function () {
+						return "Participants: " + d.ParticipantsEvolution;
+					})
+				  .style("left", event.pageX + "px")
+				  .style("top", event.pageY - 28 + "px");
+		})
+		.on("mouseleave", function (d) {
+			d3.select(this)
+				.style("stroke", "none")
+			tooltip_lc.transition().duration(200).style("opacity", 0);
+		})
 	}
 	else {
 		svg
@@ -651,6 +692,21 @@ function createLineChart(data, group, value) {
 			.attr("fill", "none")
 			.attr("d", line2)
 			.on("click", handleClickLine)
+			.on("click", handleClickLine)
+			.on("mouseover", function (event, d) {
+				if(nrCountries != 0){
+				tooltip_l.transition().duration(200).style("opacity", 0.9);
+				tooltip_l
+				  .html(function () {
+						return "Country:<br>" + data[0].Country; 
+					})
+				  .style("left", event.pageX + "px")
+				  .style("top", event.pageY - 28 + "px");
+				}
+		})
+		.on("mouseleave", function (d) {
+			tooltip_l.transition().duration(200).style("opacity", 0);
+		})
 		selectedGroup = "Women";
 		svg
 			.select(nameOfLine)
@@ -1302,12 +1358,33 @@ function createProgressBar(country, women, flag) {
 		.attr("height", height/2)
 		.append("g")
 	}
+
+	tooltip_p = d3.select("body")
+			.append("div")
+			.attr("class", "tooltip_p")
+			.style("opacity", 0)
 		
 	if (women == 1) {
 
 		svg = d3.select("div#progressBar")
 		.select(progress_w[nrNocsW])
 		.select("svg")
+		.on("mouseover", function (event, d) {
+			
+			tooltip_p.transition().duration(200).style("opacity", 0.9);
+			tooltip_p
+				.html(function () {
+					return "Country:<br>" + country.Country;
+				})
+				.style("left", event.pageX + "px")
+				.style("top", event.pageY - 28 + "px");
+		})
+		.on("mouseleave", function (d) {
+			d3.select(this)
+				.style("stroke", "none")
+			
+			tooltip_p.transition().duration(200).style("opacity", 0);
+		})
 
 		const pie = d3.pie()
 		.value(d => d[1])
@@ -1324,19 +1401,6 @@ function createProgressBar(country, women, flag) {
 		.text(country.NOC)
 		.attr("font-size", "10px")
 		.attr("transform", `translate(${width/24},${height/14})`);
-
-		c = country.Country;
-
-		if(country.Country === "United States of America"){
-			c = "United States";
-		}
-
-		pos = c.length * 4;
-
-		svg.append("text")
-		.text(c)
-		.attr("font-size", "7px")
-		.attr("transform", `translate(${width/pos},${height/44})`);
 
 		svg
 			.selectAll('progress')
@@ -1373,6 +1437,22 @@ function createProgressBar(country, women, flag) {
 		svg = d3.select("div#progressBar")
 		.select(progress_m[nrNocsM])
 		.select("svg")
+		.on("mouseover", function (event, d) {
+			
+			tooltip_p.transition().duration(200).style("opacity", 0.9);
+			tooltip_p
+				.html(function () {
+					return "Country:<br>" + country.Country;
+				})
+				.style("left", event.pageX + "px")
+				.style("top", event.pageY - 28 + "px");
+		})
+		.on("mouseleave", function (d) {
+			d3.select(this)
+				.style("stroke", "none")
+			
+			tooltip_p.transition().duration(200).style("opacity", 0);
+		})
 
 		const pie = d3.pie()
 		.value(d => d[1])
@@ -1429,7 +1509,6 @@ function handleMouseOver(event, d) {
 				countries.push(c.Country);
 			})
 			for (const x of dataset) {
-				console.log(d)
 				var output = "Country: " + d.properties.name +"<br>";
 				if (!countries.includes(d.properties.name)) {
 					return output + "This country was never host";
