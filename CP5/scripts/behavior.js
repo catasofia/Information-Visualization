@@ -2,7 +2,6 @@ var map = "/data/countries50.json"
 var stats = "/data/withcont_0.js"
 var evolution = "/data/evolution_countries_new.js"
 var topology;
-var tooltip;
 var dataEvolution;
 var selectedCountries = [];
 var selectedGroup = "General";
@@ -20,6 +19,9 @@ var colorPosition = [false, false, false, false]
 var nrNocsW = 0;
 var nrNocsM = 0;
 var progSvg = false;
+var tooltip;
+var tooltip_cl;
+var tooltip_clg;
 
 function init() {
 	Promise.all([d3.json(map), d3.json("data/newjson_0.js"), d3.json(stats), d3.json(evolution)]).then(function ([map, data, stats, evolution]) {
@@ -244,28 +246,13 @@ function createChoroplethMap() {
 		.attr("id", function (d, i) {
 			return d.properties.name;
 		})
-		.append("title")
-		.text(function (d) {
-			var countries = [];
-			dataset.forEach(function (d) {
-				countries.push(d.Country);
-			})
-			for (const x of dataset) {
-				var output = "Country: " + d.properties.name;
-				if (!countries.includes(d.properties.name)) {
-					return output + "\nThis country was never host";
-				}
-				if (d.properties.name === x.Country) {
-					years = [];
-					for (const i of dataset) {
-						if (i.Country == x.Country)
-							years.push(i.Year);
-					}
-					var difference = x.MedalsHost - x.MedalAverage;
-					return output + "\nDifference of Medals: " + difference + "\nHost in years: " + years;
-				}
-			}
-		});
+	
+	tooltip = d3
+		.select("body")
+		.append("div")
+		.attr("class", "tooltip")
+		.style("opacity", 0)
+	
 	svg.append('text')
 		.attr('x', 10)
 		.attr('y', 213)
@@ -778,6 +765,11 @@ function createClevelandMedalsPerPart(stats) {
 		.attr("x1", function (d) { return x(d.NrMedals); })
 		.attr("x2", function (d) { return x(d.Participants); })
 
+		tooltip_cl = d3.select("body")
+		.append("div")
+		.attr("class", "tooltip_cl")
+		.style("opacity", 0)
+
 	svg.selectAll("mycircle")
 		.data(datastats1)
 		.enter()
@@ -787,19 +779,25 @@ function createClevelandMedalsPerPart(stats) {
 		.attr("cy", function (d) { return y(d.NOC); })
 		.attr("r", "6")
 		.style("fill", "#6c9dc4")
-		.on("mouseover", function (d) {
+		.on("mouseover", function (event, d) {
 			d3.select(this)
 				.style("stroke", "black")
+			
+				tooltip_cl.transition().duration(200).style("opacity", 0.9);
+				tooltip_cl
+				  .html(function () {
+						return "Medalists: " + d.NrMedals;
+					})
+				  .style("left", event.pageX + "px")
+				  .style("top", event.pageY - 28 + "px");
 		})
 		.on("mouseleave", function (d) {
 			d3.select(this)
 				.style("stroke", "none")
+			tooltip_cl.transition().duration(200).style("opacity", 0);
 		})
 		.on("click", handleClevelandClick)
-		.append("title")
-		.text(function (d) {
-			return "Medalists: " + d.NrMedals;
-		})
+		
 
 	svg.selectAll(".circle1")
 		.transition()
@@ -815,19 +813,25 @@ function createClevelandMedalsPerPart(stats) {
 		.attr("cy", function (d) { return y(d.NOC); })
 		.attr("r", "6")
 		.style("fill", "#444444")
-		.on("mouseover", function (d) {
+		.on("mouseover", function (event, d) {
 			d3.select(this)
 				.style("stroke", "black")
+			
+				tooltip_cl.transition().duration(200).style("opacity", 0.9);
+				tooltip_cl
+				  .html(function () {
+						return "Participants: " + d.Participants;
+					})
+				  .style("left", event.pageX + "px")
+				  .style("top", event.pageY - 28 + "px");
 		})
 		.on("mouseleave", function (d) {
 			d3.select(this)
 				.style("stroke", "none")
+
+			tooltip_cl.transition().duration(200).style("opacity", 0);
 		})
 		.on("click", handleClevelandClick)
-		.append("title")
-		.text(function (d) {
-			return "Participants: " + d.Participants;
-		});
 
 	svg.selectAll(".circle2")
 		.transition()
@@ -912,6 +916,11 @@ function createClevelandMedalsPerGender(stats) {
 		.attr("x1", function (d) { return x(d.PercWomenMedalists); })
 		.attr("x2", function (d) { return x(d.PercMenMedalists); })
 
+	tooltip_clg = d3.select("body")
+		.append("div")
+		.attr("class", "tooltip_clg")
+		.style("opacity", 0)
+
 	svg.selectAll("mycircle")
 		.data(datastats1)
 		.enter()
@@ -921,19 +930,25 @@ function createClevelandMedalsPerGender(stats) {
 		.attr("cy", function (d) { return y(d.NOC); })
 		.attr("r", "6")
 		.style("fill", "#ff1493")
-		.on("mouseover", function (d) {
+		.on("mouseover", function (event, d) {
 			d3.select(this)
 				.style("stroke", "black")
+			
+			tooltip_clg.transition().duration(200).style("opacity", 0.9);
+			tooltip_clg
+				.html(function () {
+					return "Women Percentage: " + d.PercWomenMedalists + "%";
+				})
+				.style("left", event.pageX + "px")
+				.style("top", event.pageY - 28 + "px");
 		})
 		.on("mouseleave", function (d) {
 			d3.select(this)
 				.style("stroke", "none")
+			
+			tooltip_clg.transition().duration(200).style("opacity", 0);
 		})
 		.on("click", handleClevelandClick)
-		.append("title")
-		.text(function (d) {
-			return "Women Percentage: " + d.PercWomenMedalists + "%";
-		})
 
 
 	svg.selectAll(".circle1")
@@ -950,19 +965,25 @@ function createClevelandMedalsPerGender(stats) {
 		.attr("cy", function (d) { return y(d.NOC); })
 		.attr("r", "6")
 		.style("fill", "#6c9dc4")
-		.on("mouseover", function (d) {
+		.on("mouseover", function (event, d) {
 			d3.select(this)
 				.style("stroke", "black")
+		
+			tooltip_clg.transition().duration(200).style("opacity", 0.9);
+			tooltip_clg
+				.html(function () {
+					return "Men Percentage " + d.PercMenMedalists + "%";
+				})
+				.style("left", event.pageX + "px")
+				.style("top", event.pageY - 28 + "px");
 		})
 		.on("mouseleave", function (d) {
 			d3.select(this)
 				.style("stroke", "none")
+
+			tooltip_clg.transition().duration(200).style("opacity", 0);
 		})
 		.on("click", handleClevelandClick)
-		.append("title")
-		.text(function (d) {
-			return "Men Percentage " + d.PercMenMedalists + "%";
-		});
 
 	svg.selectAll(".circle2")
 		.transition()
@@ -1399,6 +1420,35 @@ function createProgressBar(country, women, flag) {
 function handleMouseOver(event, d) {
 	choropleth = d3.select("div#choropleth").select("svg");
 
+	tooltip.transition().duration(200).style("opacity", 0.9);
+	tooltip
+	  .html(
+		(function () {
+			var countries = [];
+			dataset.forEach(function (c) {
+				countries.push(c.Country);
+			})
+			for (const x of dataset) {
+				console.log(d)
+				var output = "Country: " + d.properties.name +"<br>";
+				if (!countries.includes(d.properties.name)) {
+					return output + "This country was never host";
+				}
+				if (d.properties.name === x.Country) {
+					years = [];
+					for (const i of dataset) {
+						if (i.Country == x.Country)
+							years.push(i.Year);
+					}
+					var difference = x.MedalsHost - x.MedalAverage;
+					return output + "Difference of Medals: " + difference + "<br>Host in years: " + years;
+				}
+			}
+		})
+	  )
+	  .style("left", event.pageX + "px")
+	  .style("top", event.pageY - 28 + "px");
+
 	choropleth
 		.selectAll("path")
 		.transition()
@@ -1417,6 +1467,8 @@ function handleMouseOver(event, d) {
 
 function handleMouseLeave(event, d) {
 	choropleth = d3.select("div#choropleth").select("svg");
+
+	tooltip.transition().duration(200).style("opacity", 0);
 
 	choropleth
 		.selectAll("path")
