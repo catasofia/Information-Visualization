@@ -89,6 +89,23 @@ function handleSelectClick( selectedOption){
 	cleveland1 = d3.select("div#clevelandMedalsP").select("svg")
 	cleveland2 = d3.select("div#clevelandMedalsG").select("svg")
 	progress = d3.select("div#progressBar").selectAll("svg")
+	counter = 0;
+	console.log("fief")
+	console.log(nrCountries)
+	for(i = 0; i < datastats.length; i++){
+		if(selectedOption == datastats[i].Country && !selectedCountries.includes(selectedOption) && !selectedCountries.includes(selectedOption)){
+			if (nrCountries + 1 > 4){
+				window.alert("Impossible to select more than 4 NOCs")
+				nrCountries -= counter;
+				return;
+			}
+			else {
+				counter++;
+				nrCountries++
+				console.log(nrCountries)
+			}
+		}
+	}
 
 	cleveland1.remove()
 	cleveland2.remove()
@@ -121,7 +138,10 @@ function handleSelectClick( selectedOption){
 			selectedCountries.forEach(function (c) {
 				if (c == selectedOption) {
 					var newlist = [];
-					nrCountries--;
+					datastats.forEach(function (i){
+						if(i.Country == d.properties.name)
+							nrCountries--
+					})
 					newlist.push(selectedOption);
 					selectedCountries = selectedCountries.filter(function (el) {
 						return !newlist.includes(el);
@@ -131,14 +151,16 @@ function handleSelectClick( selectedOption){
 		}
 		else {
 			selectedCountries.push(selectedOption);
-			nrCountries++;
 		}
 	} else {
 		if (selectedCountries.includes(selectedOption)) {
 			selectedCountries.forEach(function (c) {
 				if (c == selectedOption) {
 					var newlist = [];
-					nrCountries--;
+					datastats.forEach(function (i){
+						if(i.Country == d.properties.name)
+							nrCountries--
+					})
 					newlist.push(selectedOption);
 					selectedCountries = selectedCountries.filter(function (el) {
 						return !newlist.includes(el);
@@ -148,7 +170,6 @@ function handleSelectClick( selectedOption){
 		}
 		else {
 			selectedCountries.push(selectedOption);
-			nrCountries++;
 		}
 	}
 
@@ -1416,10 +1437,20 @@ function handleMouseClick(event, d) {
 	cleveland1 = d3.select("div#clevelandMedalsP").select("svg");
 	cleveland2 = d3.select("div#clevelandMedalsG").select("svg");
 	progress = d3.select("div#progressBar").selectAll("svg")
-
-	if (nrCountries == 4 && !selectedCountries.includes(d.properties.name) && !selectedCountries.includes(d.properties.name)) {
-		window.alert("Impossible to select more than 4 countries")
-		return;
+	counter  = 0;
+	
+	for(i = 0; i < datastats.length; i++){
+		if(d.properties.name == datastats[i].Country && !selectedCountries.includes(d.properties.name) && !selectedCountries.includes(d.properties.name)){
+			if (nrCountries + 1 > 4){
+				window.alert("Impossible to select more than 4 NOCs")
+				nrCountries -= counter;
+				return;
+			}
+			else {
+				counter++;
+				nrCountries++
+			}
+		}
 	}
 
 	if (!countriesNotHost.includes(d.properties.name) && !countriesHost.includes(d.properties.name)) {
@@ -1535,7 +1566,10 @@ function handleMouseClick(event, d) {
 			if (selectedCountries[i] === d.properties.name) {
 				colorPosition[i] = false
 				deleteLine(d.properties.name)
-				nrCountries--;
+				datastats.forEach(function (i){
+					if(i.Country == d.properties.name)
+						nrCountries--
+				})
 				var newlist = [];
 				newlist.push(d.properties.name);
 
@@ -1548,7 +1582,6 @@ function handleMouseClick(event, d) {
 		dataset1 = dataset.filter(function (c) {
 			if (d.properties.name === c.Country) {
 				if (!selectedCountries.includes(d.properties.name)) {
-					nrCountries++;
 					selectedCountries.push(d.properties.name);
 					return d.properties.name;
 				}
@@ -1562,7 +1595,10 @@ function handleMouseClick(event, d) {
 			if (selectedCountries[i] === d.properties.name) {
 				colorPosition[i] = false
 				deleteLine(d.properties.name)
-				nrCountries--;
+				datastats.forEach(function (i){
+					if(i.Country == d.properties.name)
+						nrCountries--
+				})
 				var newlist = [];
 				newlist.push(d.properties.name);
 
@@ -1575,7 +1611,6 @@ function handleMouseClick(event, d) {
 		dataset1 = datastats.filter(function (c) {
 			if (d.properties.name === c.Country) {
 				if (!selectedCountries.includes(d.properties.name)) {
-					nrCountries++;
 					selectedCountries.push(d.properties.name);
 					return d.properties.name;
 				}
@@ -1643,6 +1678,20 @@ function handleClickLine(event, d) {
 	nrNocsW = 0;
 	progSvg = true;
 
+	for(i = 0; i < datastats.length; i++){
+		if(d[0].Country == datastats[i].Country && !selectedCountries.includes(d[0].Country) && !selectedCountries.includes(d[0].Country)){
+			if (nrCountries + 1 > 4){
+				window.alert("Impossible to select more than 4 NOCs")
+				nrCountries -= counter;
+				return;
+			}
+			else {
+				counter++;
+				nrCountries++
+			}
+		}
+	}
+
 	
 	if (selectedCountries.includes(d[0].Country)) {
 		choropleth
@@ -1668,7 +1717,6 @@ function handleClickLine(event, d) {
 			.selectAll("path")
 			.filter(function (c) {
 				if (d[0].Country == c.properties.name) {
-					nrCountries++
 					selectedCountries.push(d[0].Country)
 					return c;
 				}
@@ -1681,7 +1729,10 @@ function handleClickLine(event, d) {
 				if (d[0].Country == c.properties.name) {
 					var newlist1 = [];
 					newlist1.push(d[0].Country);
-					nrCountries--
+					datastats.forEach(function (i){
+						if(i.Country == d[0].Country)
+							nrCountries--
+					})
 					selectedCountries = selectedCountries.filter(function (el) {
 						return !newlist1.includes(el);
 					});
@@ -1698,7 +1749,10 @@ function handleClickLine(event, d) {
 				deleteLine(d[0].Country)
 				var newlist = [];
 				newlist.push(d[0].Country);
-				nrCountries--;
+				datastats.forEach(function (i){
+					if(i.Country == d[0].Country)
+						nrCountries--
+				})
 				selectedCountries = selectedCountries.filter(function (el) {
 					return !newlist.includes(el);
 				});
@@ -1709,7 +1763,6 @@ function handleClickLine(event, d) {
 			if (d[0].Country === c.Country) {
 				if (!selectedCountries.includes(d[0].Country)) {
 					selectedCountries.push(d[0].Country);
-					nrCountries++
 					return d[0].Country;
 				}
 			}
