@@ -262,148 +262,178 @@ function createChoroplethMap() {
 			return d.properties.name;
 		})
 
+	var defs = svg.append("defs");
 
-	svg.append('text')
-		.attr('x', 10)
-		.attr('y', 213)
-		.attr('stroke', '#333333')
-		.style("font-size", "13px")
-		.style("font-family", "sans-serif")
-		.text("Difference of medals:")
-	svg.append('rect')
-		.attr('x', 10)
-		.attr('y', 225)
-		.attr('width', 20)
-		.attr('height', 20)
-		.attr('stroke', '#333333')
-		.attr('fill', '#f5918c');
-	svg.append('text')
-		.attr('x', 35)
-		.attr('y', 238)
-		.attr('stroke', '#333333')
-		.style("font-size", "13px")
-		.style("font-family", "sans-serif")
-		.text("<0")
+	var linearGradient = defs.append("linearGradient")
+		.attr("id", "linear-gradient");
 
-	svg.append('rect')
-		.attr('x', 10)
-		.attr('y', 247)
-		.attr('width', 20)
-		.attr('height', 20)
-		.attr('stroke', "#333333")
-		.attr('fill', d3.interpolateRgb("white", "#3e5f85")(15 / 200));
-	svg.append('text')
-		.attr('x', 35)
-		.attr('y', 262)
-		.attr('stroke', '#333333')
-		.style("font-size", "13px")
-		.style("font-family", "sans-serif")
-		.text("0-29")
+	linearGradient
+		.attr("x1", "0%")
+		.attr("y1", "0%")
+		.attr("x2", "0%")
+		.attr("y2", "100%");
 
-	svg.append('rect')
-		.attr('x', 10)
-		.attr('y', 269)
-		.attr('width', 20)
-		.attr('height', 20)
-		.attr('stroke', "#333333")
-		.attr('fill', d3.interpolateRgb("white", "#3e5f85")(45 / 200));
-	svg.append('text')
-		.attr('x', 35)
-		.attr('y', 285)
-		.attr('stroke', '#333333')
-		.style("font-size", "13px")
-		.style("font-family", "sans-serif")
-		.text("30-60")
+	linearGradient.append("stop")
+	.attr("offset", "0%")
+	.attr("stop-color", "#f5918c");
 
-	svg.append('rect')
-		.attr('x', 10)
-		.attr('y', 291)
-		.attr('width', 20)
-		.attr('height', 20)
-		.attr('stroke', "#333333")
-		.attr('fill', d3.interpolateRgb("white", "#3e5f85")(80 / 200));
-	svg.append('text')
-		.attr('x', 35)
-		.attr('y', 305)
-		.attr('stroke', '#333333')
-		.style("font-size", "13px")
-		.style("font-family", "sans-serif")
-		.text("61-100")
+	linearGradient.append("stop")
+	.attr("offset", "20%")
+	.attr("stop-color", "white");
 
-	svg.append('rect')
-		.attr('x', 10)
-		.attr('y', 313)
-		.attr('width', 20)
-		.attr('height', 20)
-		.attr('stroke', "#333333")
-		.attr('fill', d3.interpolateRgb("white", "#3e5f85")(135 / 200));
-	svg.append('text')
-		.attr('x', 35)
-		.attr('y', 327)
-		.attr('stroke', '#333333')
-		.style("font-size", "13px")
-		.style("font-family", "sans-serif")
-		.text("101-151")
+	//Set the color for the end (100%)
+	linearGradient.append("stop")
+	.attr("offset", "100%")
+	.attr("stop-color", "#3e5f85"); //dark blue
 
-	svg.append('rect')
-		.attr('x', 10)
-		.attr('y', 335)
-		.attr('width', 20)
-		.attr('height', 20)
-		.attr('stroke', "#333333")
-		.attr('fill', d3.interpolateRgb("white", "#3e5f85")(160 / 200));
-	svg.append('text')
-		.attr('x', 35)
-		.attr('y', 349)
-		.attr('stroke', '#333333')
-		.style("font-size", "13px")
-		.style("font-family", "sans-serif")
-		.text("152-199")
+	svg.append("rect")
+    .attr("width", 20)
+    .attr("height", 200)
+	.attr("y", window.innerHeight * 0.23)
+    .style("fill", "url(#linear-gradient)");
 
-	svg.append('rect')
-		.attr('x', 10)
-		.attr('y', 357)
-		.attr('width', 20)
-		.attr('height', 20)
-		.attr('stroke', "#333333")
-		.attr('fill', d3.interpolateRgb("white", "#3e5f85")(200 / 200));
-	svg.append('text')
-		.attr('x', 35)
-		.attr('y', 371)
-		.attr('stroke', '#333333')
-		.style("font-size", "13px")
-		.style("font-family", "sans-serif")
-		.text("200-250")
-
-	svg.append('rect')
-		.attr('x', 10)
-		.attr('y', 379)
-		.attr('width', 20)
-		.attr('height', 20)
-		.attr('stroke', "#333333")
-		.attr('fill', d3.interpolateRgb("white", "#3e5f85")(300 / 200));
-	svg.append('text')
-		.attr('x', 35)
-		.attr('y', 393)
-		.attr('stroke', '#333333')
-		.style("font-size", "13px")
-		.style("font-family", "sans-serif")
-		.text(">250")
-
-	svg.append('rect')
-		.attr('x', 10)
-		.attr('y', 401)
-		.attr('width', 20)
-		.attr('height', 20)
-		.attr('stroke', '#333333')
-		.attr('fill', '#cccccc');
-	svg.append('text')
-		.attr('x', 35)
-		.attr('y', 415)
-		.attr('stroke', '#333333')
-		.style("font-size", "13px")
-		.style("font-family", "sans-serif")
-		.text("Never host")
+	/*
+		svg.append('text')
+			.attr('x', 10)
+			.attr('y', 213)
+			.attr('stroke', '#333333')
+			.style("font-size", "13px")
+			.style("font-family", "sans-serif")
+			.text("Difference of medals:")
+		svg.append('rect')
+			.attr('x', 10)
+			.attr('y', 225)
+			.attr('width', 20)
+			.attr('height', 20)
+			.attr('stroke', '#333333')
+			.attr('fill', '#f5918c');
+		svg.append('text')
+			.attr('x', 35)
+			.attr('y', 238)
+			.attr('stroke', '#333333')
+			.style("font-size", "13px")
+			.style("font-family", "sans-serif")
+			.text("<0")
+	
+		svg.append('rect')
+			.attr('x', 10)
+			.attr('y', 247)
+			.attr('width', 20)
+			.attr('height', 20)
+			.attr('stroke', "#333333")
+			.attr('fill', d3.interpolateRgb("white", "#3e5f85")(15 / 200));
+		svg.append('text')
+			.attr('x', 35)
+			.attr('y', 262)
+			.attr('stroke', '#333333')
+			.style("font-size", "13px")
+			.style("font-family", "sans-serif")
+			.text("0-29")
+	
+		svg.append('rect')
+			.attr('x', 10)
+			.attr('y', 269)
+			.attr('width', 20)
+			.attr('height', 20)
+			.attr('stroke', "#333333")
+			.attr('fill', d3.interpolateRgb("white", "#3e5f85")(45 / 200));
+		svg.append('text')
+			.attr('x', 35)
+			.attr('y', 285)
+			.attr('stroke', '#333333')
+			.style("font-size", "13px")
+			.style("font-family", "sans-serif")
+			.text("30-60")
+	
+		svg.append('rect')
+			.attr('x', 10)
+			.attr('y', 291)
+			.attr('width', 20)
+			.attr('height', 20)
+			.attr('stroke', "#333333")
+			.attr('fill', d3.interpolateRgb("white", "#3e5f85")(80 / 200));
+		svg.append('text')
+			.attr('x', 35)
+			.attr('y', 305)
+			.attr('stroke', '#333333')
+			.style("font-size", "13px")
+			.style("font-family", "sans-serif")
+			.text("61-100")
+	
+		svg.append('rect')
+			.attr('x', 10)
+			.attr('y', 313)
+			.attr('width', 20)
+			.attr('height', 20)
+			.attr('stroke', "#333333")
+			.attr('fill', d3.interpolateRgb("white", "#3e5f85")(135 / 200));
+		svg.append('text')
+			.attr('x', 35)
+			.attr('y', 327)
+			.attr('stroke', '#333333')
+			.style("font-size", "13px")
+			.style("font-family", "sans-serif")
+			.text("101-151")
+	
+		svg.append('rect')
+			.attr('x', 10)
+			.attr('y', 335)
+			.attr('width', 20)
+			.attr('height', 20)
+			.attr('stroke', "#333333")
+			.attr('fill', d3.interpolateRgb("white", "#3e5f85")(160 / 200));
+		svg.append('text')
+			.attr('x', 35)
+			.attr('y', 349)
+			.attr('stroke', '#333333')
+			.style("font-size", "13px")
+			.style("font-family", "sans-serif")
+			.text("152-199")
+	
+		svg.append('rect')
+			.attr('x', 10)
+			.attr('y', 357)
+			.attr('width', 20)
+			.attr('height', 20)
+			.attr('stroke', "#333333")
+			.attr('fill', d3.interpolateRgb("white", "#3e5f85")(200 / 200));
+		svg.append('text')
+			.attr('x', 35)
+			.attr('y', 371)
+			.attr('stroke', '#333333')
+			.style("font-size", "13px")
+			.style("font-family", "sans-serif")
+			.text("200-250")
+	
+		svg.append('rect')
+			.attr('x', 10)
+			.attr('y', 379)
+			.attr('width', 20)
+			.attr('height', 20)
+			.attr('stroke', "#333333")
+			.attr('fill', d3.interpolateRgb("white", "#3e5f85")(300 / 200));
+		svg.append('text')
+			.attr('x', 35)
+			.attr('y', 393)
+			.attr('stroke', '#333333')
+			.style("font-size", "13px")
+			.style("font-family", "sans-serif")
+			.text(">250")
+	
+		svg.append('rect')
+			.attr('x', 10)
+			.attr('y', 401)
+			.attr('width', 20)
+			.attr('height', 20)
+			.attr('stroke', '#333333')
+			.attr('fill', '#cccccc');
+		svg.append('text')
+			.attr('x', 35)
+			.attr('y', 415)
+			.attr('stroke', '#333333')
+			.style("font-size", "13px")
+			.style("font-family", "sans-serif")
+			.text("Never host") */
 }
 
 function triggerTransitionDelay() {
@@ -590,6 +620,7 @@ function createLineChart(data, group, value, local_Countries) {
 						if (!colorPosition[i] && color == null) {
 							colorPosition[i] = true
 							color = colorScaleMen(i + 1)
+							break;
 						}
 					}
 					return color
@@ -2098,8 +2129,6 @@ function handleClickLine(event, d) {
 				for (i = 0; i < selectedCountries.length; i++) {
 					if (selectedCountries[i] === d[j].Country) {
 						colorPosition[i] = false
-						console.log("i" + i)
-						console.log(colorPosition[i])
 						deleteLine(d[j].Country)
 						var newlist = [];
 						newlist.push(d[j].Country);
@@ -2170,6 +2199,7 @@ function handleClickLine(event, d) {
 			createProgressBar("", "", true);
 			createLineChart(dataset, "General", false, selectedCountries);
 		}
+<<<<<<< HEAD
 		else {
 			for (i = 0; i < d.length; i++) {
 				if (d[i].Country) {
@@ -2178,6 +2208,8 @@ function handleClickLine(event, d) {
 				}
 			}
 		}
+=======
+>>>>>>> legend choro
 	}
 	else {
 		linechart
@@ -2214,16 +2246,22 @@ function handleClickLine(event, d) {
 			nrNocsM = 0;
 			nrNocsW = 0;
 			progSvg = true;
+<<<<<<< HEAD
 			createLineChart(dataset, "Women", false, selectedCountries);
+=======
+>>>>>>> legend choro
 			createProgressBar("", "", true);
 			createLineChart(dataset, "Women", false, selectedCountries);
 		}
+<<<<<<< HEAD
 		else {
 			for (i = 0; i < d.length; i++) {
 				if (d[i].Country)
 					updateLineChart("Women", d[i].Country, selectedCountries);
 			}
 		}
+=======
+>>>>>>> legend choro
 	}
 
 	createClevelandMedalsPerPart(datastats);
