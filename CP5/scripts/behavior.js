@@ -624,8 +624,12 @@ function createLineChart(data, group, value) {
 					return "general"
 				}
 				else {
-					nameOfLine = "#" + data[0].NOC
-					return data[0].NOC
+					for (let index = 0; index < 4; index++) {
+						if( data[index].NOC != undefined){
+							nameOfLine = "#" + data[index].NOC
+							return data[index].NOC
+						}
+					}
 				}
 			})
 			.attr("class", "line")
@@ -747,8 +751,12 @@ function createLineChart(data, group, value) {
 					return "women"
 				}
 				else {
-					nameOfLine = "#" + data[0].NOC
-					return data[0].NOC
+					for (let index = 0; index < 4; index++) {
+						if( data[index].NOC != undefined){
+							nameOfLine = "#" + data[index].NOC
+							return data[index].NOC
+						}
+					}
 				}
 			})
 			.attr("class", "line")
