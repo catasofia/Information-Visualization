@@ -279,14 +279,39 @@ function createChoroplethMap() {
 	linearGradient.append("stop")
 		.attr("offset", "16.5%")
 		.attr("stop-color", "white");
-	
+
 	linearGradient.append("stop")
-	.attr("offset", "85%")
-	.attr("stop-color", "#3e5f85");
+		.attr("offset", "85%")
+		.attr("stop-color", "#3e5f85");
 
 	linearGradient.append("stop")
 		.attr("offset", "100%")
-		.attr("stop-color", "#000F48"); 
+		.attr("stop-color", "#000F48");
+
+
+	svg.append('text')
+		.attr('x', window.innerWidth * 0.001)
+		.attr('y', window.innerHeight * 0.18)
+		.attr('stroke', 'black')
+		.style("font-size", "13px")
+		.style("font-family", "sans-serif")
+		.text("Difference between the medals")
+	
+	svg.append('text')
+		.attr('x', window.innerWidth * 0.001)
+		.attr('y', window.innerHeight * 0.20)
+		.attr('stroke', 'black')
+		.style("font-size", "13px")
+		.style("font-family", "sans-serif")
+		.text("won when the country was host")
+
+	svg.append('text')
+		.attr('x', window.innerWidth * 0.001)
+		.attr('y', window.innerHeight * 0.22)
+		.attr('stroke', 'black')
+		.style("font-size", "13px")
+		.style("font-family", "sans-serif")
+		.text("and when it was not: ")
 
 	svg.append("rect")
 		.attr("width", 20)
@@ -309,7 +334,7 @@ function createChoroplethMap() {
 		.style("font-size", "13px")
 		.style("font-family", "sans-serif")
 		.text("Never in the Olympics")
-	
+
 	svg.append('text')
 		.attr('x', window.innerWidth * 0.015)
 		.attr('y', window.innerHeight * 0.295)
@@ -772,11 +797,11 @@ function createLineChart(data, group, value, local_Countries) {
 			}
 			yCPosition = 0.02
 			xTPosition = 3
-				xTPosition = 3 
 			xTPosition = 3
-				xTPosition = 3 
 			xTPosition = 3
-				xTPosition = 3 
+			xTPosition = 3
+			xTPosition = 3
+			xTPosition = 3
 			xTPosition = 3
 			yTPosition = 0.025
 		}
