@@ -599,7 +599,11 @@ function createLineChart(data, group, value) {
 					tooltip_l.transition().duration(200).style("opacity", 0.9);
 					tooltip_l
 						.html(function () {
-							return "Country:<br>" + data[0].Country;
+							for (let index = 0; index < 4; index++) {
+								if( data[index].Country != undefined){
+									return "Country:<br>" + data[index].Country;
+								}
+							}
 						})
 						.style("left", event.pageX + "px")
 						.style("top", event.pageY - 28 + "px");
@@ -757,7 +761,11 @@ function createLineChart(data, group, value) {
 					tooltip_l.transition().duration(200).style("opacity", 0.9);
 					tooltip_l
 						.html(function () {
-							return "Country:<br>" + data[0].Country;
+							for (let index = 0; index < 4; index++) {
+								if( data[index].Country != undefined){
+									return "Country:<br>" + data[index].Country;
+								}
+							}
 						})
 						.style("left", event.pageX + "px")
 						.style("top", event.pageY - 28 + "px");
