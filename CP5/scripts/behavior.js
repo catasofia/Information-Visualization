@@ -394,6 +394,8 @@ function createChoroplethMap() {
 
 function createLineChart(data, group, value, local_Countries) {
 
+	//console.log(local_Countries);
+
 	var color = null
 	var nameOfLine;
 	selectedGroup = group;
@@ -683,7 +685,7 @@ function createLineChart(data, group, value, local_Countries) {
 				return d;
 		})
 
-		console.log(dataCircles)
+		//console.log(dataCircles)
 
 		var selectCircle =
 			svg
@@ -2151,14 +2153,16 @@ function update(selectedGroup) {
 	switch (selectedGroup) {
 		case "General":
 			colorPosition = [false, false, false, false]
+			selectedGroup = "General";
+			d3.selectAll("#women").remove()
 			if (selectedCountries.length == 0) {
-				d3.selectAll("#women").remove()
 				createLineChart(dataset, "General", false, selectedCountries);
 			}
 			else {
 				for (const iter of selectedCountries) {
-					legendselected_Countries.push(iter);
 					deleteLine(iter, false)
+				}
+				for (const iter of selectedCountries) {
 					legendselected_Countries.push(iter);
 					updateLineChart("General", iter, legendselected_Countries);
 				}
@@ -2173,8 +2177,9 @@ function update(selectedGroup) {
 			}
 			else {
 				for (const iter of selectedCountries) {
-					legendselected_Countries.push(iter);
 					deleteLine(iter, false)
+				}
+				for (const iter of selectedCountries) {
 					legendselected_Countries.push(iter);
 					updateLineChart("Women", iter, legendselected_Countries);
 				}
