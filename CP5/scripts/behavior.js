@@ -1,6 +1,7 @@
 var map = "/data/countries50.json"
 var stats = "/data/withcont_0.js"
-var evolution = "/data/evolution_countries_new.js"
+//var evolution = "/data/evolution_countries_new.js"
+var evolution = "/data/stats.js"
 var topology;
 var dataEvolution;
 var selectedCountries = [];
@@ -52,7 +53,7 @@ function init() {
 
 		colorScaleWomen = d3.scaleThreshold()
 			.domain([1, 2, 3, 4])
-			.range(["#ffc0cb", "#ffb6c1", "#ff69b4", "#ff1493"])
+			.range(["#facdd6", "#ffa3d2", "#ff69b4", "#ff1493"])
 
 		createChoroplethMap();
 		createProgressBar("", "", true)
@@ -421,29 +422,29 @@ function createLineChart(data, group, value, local_Countries) {
 	line = d3
 		.line()
 		.defined(function (d) {
-			return d.WomenEvolution !== null;
+			return d.Participants !== null;
 		})
 		.x((d) => x(d.Year))
-		.y((d) => y(d.ParticipantsEvolution))
+		.y((d) => y(d.Participants))
 
 
 	if (value || nrCountries == 0) {
 		lineg = d3
 			.line()
 			.defined(function (d) {
-				return d.WomenEvolution !== null;
+				return d.Participants !== null;
 			})
 			.x((d) => x(d.Year))
-			.y((d) => y(d.ParticipantsEvolution))
+			.y((d) => y(d.Participants))
 	}
 
 	line2 = d3
 		.line()
 		.defined(function (d) {
-			return d.WomenEvolution !== null;
+			return d.Participants !== null;
 		})
 		.x((d) => x(d.Year))
-		.y((d) => y(d.WomenEvolution))
+		.y((d) => y(d.WomenParticipants))
 
 	x = d3
 		.scaleLinear()
@@ -468,6 +469,7 @@ function createLineChart(data, group, value, local_Countries) {
 			.range([height - margin.bottom, margin.top]);
 	}
 
+	
 	var years = [];
 	dataset.forEach(function (d) {
 		years.push(d.Year);
@@ -696,13 +698,13 @@ function createLineChart(data, group, value, local_Countries) {
 			.attr("r", 3.5)
 			.attr("id", nameOfLine)
 			.attr("cx", (d) => x(d.Year))
-			.attr("cy", (d) => y(d.ParticipantsEvolution))
+			.attr("cy", (d) => y(d.Participants))
 			.style("fill", color)
 			.on("mouseover", function (event, d) {
 				tooltip_lc.transition().duration(200).style("opacity", 0.9);
 				tooltip_lc
 					.html(function () {
-						return "Participants: " + d.ParticipantsEvolution;
+						return "Participants: " + d.Participants;
 					})
 					.style("left", event.pageX + "px")
 					.style("top", event.pageY - 28 + "px");
@@ -878,13 +880,13 @@ function createLineChart(data, group, value, local_Countries) {
 			.attr("r", 3.5)
 			.attr("id", nameOfLine)
 			.attr("cx", (d) => x(d.Year))
-			.attr("cy", (d) => y(d.WomenEvolution))
+			.attr("cy", (d) => y(d.WomenParticipants))
 			.style("fill", colorWomen)
 			.on("mouseover", function (event, d) {
 				tooltip_lc.transition().duration(200).style("opacity", 0.9);
 				tooltip_lc
 					.html(function () {
-						return "Participants: " + d.WomenEvolution;
+						return "Participants: " + d.WomenParticipants;
 					})
 					.style("left", event.pageX + "px")
 					.style("top", event.pageY - 28 + "px");
@@ -924,6 +926,7 @@ function createClevelandMedalsPerPart(stats) {
 		.append("g")
 		.attr("transform", `translate(${margin.left}, ${margin.top})`)
 
+
 	datastats1 = datastats.filter(function (d) {
 		if (selectedCountries.length == 0) {
 			if (d.Participants > 5000)
@@ -931,7 +934,7 @@ function createClevelandMedalsPerPart(stats) {
 		}
 		else if (selectedCountries.includes(d.Country))
 			return d;
-	})
+	}) 
 
 	x = d3.scaleLinear()
 		.domain([0, d3.max(datastats1, (d) => d.Participants)])
@@ -1919,10 +1922,9 @@ function handleMouseClick(event, d) {
 		})
 
 	}
-
+	
 	createClevelandMedalsPerPart(datastats);
 	createClevelandMedalsPerGender(datastats);
-
 	if (selectedCountries.length == 0) {
 		createProgressBar("", "", true);
 		if (selectedGroup == "General")
