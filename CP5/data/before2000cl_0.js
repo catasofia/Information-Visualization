@@ -1,0 +1,1 @@
+[{"WomenParticipants":5,"MenParticipants":13,"MenPerc":15.0,"WomenMedalists":null,"NOC":"AFG","Medalists":4,"MenMedalists":2,"Country":"Afghanistan","Participants":18,"WomenPerc":null},{"WomenParticipants":1,"MenParticipants":14,"MenPerc":null,"WomenMedalists":null,"NOC":"AHO","Medalists":null,"MenMedalists":null,"Country":"Curacao","Participants":15,"WomenPerc":null}]

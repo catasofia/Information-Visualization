@@ -1,7 +1,12 @@
 var map = "/data/countries50.json"
-var stats = "/data/withcont_0.js"
-//var evolution = "/data/evolution_countries_new.js"
-var evolution = "/data/stats.js"
+var stats = "/data/cldataset2_0_3.js"
+var evolution = "/data/evolution_countries_new.js"
+var after2 = "/data/afterand2000_0.js"
+var before2 = "/data/bbbefore2000_0.js"
+var afterline = "/data/lineafter2000.js"
+var beforeline = "/data/linebefore2000.js"
+var afterhosts = "/data/after2000hosts.js"
+var beforehosts = "/data/before2000hosts.js"
 var topology;
 var dataEvolution;
 var selectedCountries = [];
@@ -15,6 +20,15 @@ var colorScaleWomen;
 var nrCountries = 0;
 var lineg;
 var dataset;
+var after2000;
+var before2000;
+var after2000h;
+var before2000h;
+var lineafter;
+var lineall;
+var all;
+var data;
+var linebefore;
 var progress_w = ["#progressw_1", "#progressw_2", "#progressw_3", "#progressw_4"];
 var progress_m = ["#progressm_1", "#progressm_2", "#progressm_3", "#progressm_4"];
 var colorPosition = [false, false, false, false]
@@ -27,12 +41,23 @@ var tooltip_clg;
 var tooltip_p;
 var tooltip_lc;
 var tooltip_l;
+var yearsFilter = "default"
 
 function init() {
-	Promise.all([d3.json(map), d3.json("data/newjson_0.js"), d3.json(stats), d3.json(evolution)]).then(function ([map, data, stats, evolution]) {
+	Promise.all([d3.json(map), d3.json("data/newjson_0.js"), d3.json(stats), d3.json(evolution), d3.json(after2), 
+	d3.json(before2),d3.json(afterline), d3.json(beforeline),d3.json(afterhosts), 
+	d3.json(beforehosts)]).then(function ([map, data, stats, evolution, after, before, afterL, beforeL, afterH, beforeH]) {
 		topology = map;
+		allhosts = data;
 		dataset = data;
+		all = stats
 		datastats = stats;
+		lineall = evolution;
+		before2000 = before;
+		lineafter = afterL;
+		after2000h = afterH;
+		before2000h = beforeH;
+		linebefore = beforeL;
 		dataEvolution = evolution;
 		dataset.forEach(function (i) {
 			countriesHost.push(i.Country);
@@ -41,7 +66,7 @@ function init() {
 			if (!countriesHost.includes(j))
 				countriesNotHost.push(j.Country);
 		})
-
+		after2000 = after
 		tooltip = d3.select("body")
 			.append("div")
 			.attr("class", "tooltip")
@@ -58,8 +83,8 @@ function init() {
 		createChoroplethMap();
 		createProgressBar("", "", true)
 		createLineChart(data, "General", true, selectedCountries);
-		createClevelandMedalsPerPart(stats);
-		createClevelandMedalsPerGender(stats);
+		createClevelandMedalsPerPart(stats, true);
+		createClevelandMedalsPerGender(stats, true);
 		createListCountries();
 		addZoom();
 	});
@@ -138,60 +163,60 @@ function handleSelectClick(selectedOption) {
 			.style("stroke-width", 3);
 	}
 
-	if (countriesHost.includes(selectedOption)) {
-		if (selectedCountries.includes(selectedOption)) {
-			selectedCountries.forEach(function (c) {
-				if (c == selectedOption) {
-					var newlist = [];
-					datastats.forEach(function (i) {
-						if (i.Country == selectedOption)
-							nrCountries--
-					})
-					newlist.push(selectedOption);
-					selectedCountries = selectedCountries.filter(function (el) {
-						return !newlist.includes(el);
-					});
+	if (selectedCountries.includes(selectedOption)) {
+		for (i = 0; i < selectedCountries.length; i++) {
+			if (selectedCountries[i] === selectedOption) {
+				colorPosition[i] = false
+				deleteLine(selectedOption, false)
+				datastats.forEach(function (i) {
+					if (i.Country == selectedOption)
+						nrCountries--
+				})
+				var newlist = [];
+				newlist.push(selectedOption);
+
+				selectedCountries = selectedCountries.filter(function (el) {
+					return !newlist.includes(el);
+				});
+			}
+		}
+	} else if (!selectedCountries.includes(selectedOption)) {
+		dataset1 = dataset.filter(function (c) {
+			if (selectedOption === c.Country) {
+				if (!selectedCountries.includes(selectedOption)) {
+					selectedCountries.push(selectedOption);
+					return selectedOption;
 				}
-			})
-		}
-		else {
-			selectedCountries.push(selectedOption);
-		}
-	} else {
-		if (selectedCountries.includes(selectedOption)) {
-			selectedCountries.forEach(function (c) {
-				if (c == selectedOption) {
-					var newlist = [];
-					datastats.forEach(function (i) {
-						if (i.Country == selectedOption)
-							nrCountries--
-					})
-					newlist.push(selectedOption);
-					selectedCountries = selectedCountries.filter(function (el) {
-						return !newlist.includes(el);
-					});
-				}
-			})
-		}
-		else {
-			selectedCountries.push(selectedOption);
-		}
+			}
+		})
+
+	}
+
+	if(yearsFilter == "default"){
+		createClevelandMedalsPerPart(datastats, true);
+		createClevelandMedalsPerGender(datastats, true);
+	}
+	else{
+		createClevelandMedalsPerPart(datastats, false);
+		createClevelandMedalsPerGender(datastats, false);
 	}
 
 	if (selectedCountries.length == 0) {
 		createProgressBar("", "", true);
-		createLineChart(dataset, "General", false, selectedCountries);
-		deleteLine(selectedOption, true)
+		if (selectedGroup == "General")
+			createLineChart(dataset, "General", false, selectedCountries);
+		else if (selectedGroup == "Women")
+			createLineChart(dataset, "Women", false, selectedCountries);
 	}
 	else if (selectedCountries.includes(selectedOption)) {
-		updateLineChart("General", selectedOption, selectedCountries);
+		if (selectedGroup == "General")
+			updateLineChart("General", selectedOption, selectedCountries);
+		else if (selectedGroup == "Women")
+			updateLineChart("Women", selectedOption, selectedCountries)
 	}
 	else {
 		deleteLine(selectedOption, true)
 	}
-
-	createClevelandMedalsPerPart(datastats);
-	createClevelandMedalsPerGender(datastats);
 
 	data_aux = datastats.filter(function (d) {
 		if (selectedCountries.includes(d.Country))
@@ -248,9 +273,9 @@ function createChoroplethMap() {
 			for (const x of dataset) {
 				if (!countriesPart.includes(d.properties.name))
 					return "white";
-				if (!countriesHost.includes(d.properties.name))
+				else if (!countriesHost.includes(d.properties.name))
 					return "#cccccc";
-				if (d.properties.name === x.Country) {
+				else if (d.properties.name === x.Country) {
 					if ((x.MedalsHost - x.MedalAverage) < 0) return "#f5918c";
 					return d3.interpolateRgb("white", "#3e5f85")((x.MedalsHost - x.MedalAverage) / 200);
 				}
@@ -446,16 +471,51 @@ function createLineChart(data, group, value, local_Countries) {
 		.x((d) => x(d.Year))
 		.y((d) => y(d.WomenParticipants))
 
-	x = d3
-		.scaleLinear()
-		.domain([1896, 2016])
-		.range([margin.left, width - 20]);
-	if (value || nrCountries == 0) {
+	if(yearsFilter == "default"){
+		x = d3
+			.scaleLinear()
+			.domain([1896, 2016])
+			.range([margin.left, width - 20]);
+	}
+	else if(yearsFilter == "after"){
+		x = d3
+			.scaleLinear()
+			.domain([2000, 2016])
+			.range([margin.left, width - 20]);
+	}
+	else{
+		x = d3
+			.scaleLinear()
+			.domain([1896, 1996])
+			.range([margin.left, width - 20]);
+	}
+
+	if (value && nrCountries == 0) {
 		y = d3
 			.scaleLinear()
 			.domain([0, 13000])
 			.range([height - margin.bottom, margin.top]);
 	}
+	else if(yearsFilter == "default" && nrCountries == 0){
+		y = d3
+			.scaleLinear()
+			.domain([0, 13000])
+			.range([height - margin.bottom, margin.top]);
+	}
+	else if(yearsFilter == "after" && nrCountries == 0){
+		y = d3
+			.scaleLinear()
+			.domain([12000, 14000])
+			.range([height - margin.bottom, margin.top]);
+	}
+
+	else if(yearsFilter == "before" && nrCountries == 0){
+		y = d3
+			.scaleLinear()
+			.domain([0, 13000])
+			.range([height - margin.bottom, margin.top]);
+	}
+	
 	else if (group == "General") {
 		y = d3
 			.scaleLinear()
@@ -550,6 +610,8 @@ function createLineChart(data, group, value, local_Countries) {
 				}
 				else {
 					for (i = 0; i < colorPosition.length; i++) {
+						console.log(i)
+						console.log(colorPosition[i])
 						if (!colorPosition[i] && color == null) {
 							colorPosition[i] = true
 							color = colorScaleMen(i + 1)
@@ -911,7 +973,7 @@ function updateLineChart(group, country, aux_countries) {
 	createLineChart(dataEvolution1, group, false, aux_countries)
 }
 
-function createClevelandMedalsPerPart(stats) {
+function createClevelandMedalsPerPart(stats, flag) {
 	const margin = { top: 28, right: 30, bottom: 30, left: 55 },
 		width = window.innerWidth / 4.5 - margin.left - margin.right,
 		height = window.innerHeight * 0.298;
@@ -929,8 +991,16 @@ function createClevelandMedalsPerPart(stats) {
 
 	datastats1 = datastats.filter(function (d) {
 		if (selectedCountries.length == 0) {
-			if (d.Participants > 5000)
-				return d;
+			if(flag){
+				if (d.Participants > 5000)
+					return d;}
+				else if(yearsFilter == "after"){
+					if (d.Participants > 1000)
+						return d;}
+				else{
+					if (d.Participants > 3000)
+						return d;
+				}
 		}
 		else if (selectedCountries.includes(d.Country))
 			return d;
@@ -965,7 +1035,7 @@ function createClevelandMedalsPerPart(stats) {
 	svg.selectAll(".line")
 		.transition()
 		.duration(2000)
-		.attr("x1", function (d) { return x(d.NrMedals); })
+		.attr("x1", function (d) { return x(d.Medalists); })
 		.attr("x2", function (d) { return x(d.Participants); })
 
 	tooltip_cl = d3.select("body")
@@ -989,7 +1059,7 @@ function createClevelandMedalsPerPart(stats) {
 			tooltip_cl.transition().duration(200).style("opacity", 0.9);
 			tooltip_cl
 				.html(function () {
-					return "Medalists: " + d.NrMedals;
+					return "Medalists: " + d.Medalists;
 				})
 				.style("left", event.pageX + "px")
 				.style("top", event.pageY - 28 + "px");
@@ -1005,7 +1075,7 @@ function createClevelandMedalsPerPart(stats) {
 	svg.selectAll(".circle1")
 		.transition()
 		.duration(2000)
-		.attr("cx", function (d) { return x(d.NrMedals); })
+		.attr("cx", function (d) { return x(d.Medalists); })
 
 	svg.selectAll("mycircle")
 		.data(datastats1)
@@ -1069,10 +1139,11 @@ function createClevelandMedalsPerPart(stats) {
 		.text("NOC");
 }
 
-function createClevelandMedalsPerGender(stats) {
+function createClevelandMedalsPerGender(stats, flag) {
 	const margin = { top: 28, right: 30, bottom: 30, left: 40 },
 		width = window.innerWidth / 4.5 - margin.left - margin.right,
 		height = window.innerHeight * 0.298;
+
 
 	const svg = d3.select("#clevelandMedalsG")
 		.append("svg")
@@ -1083,16 +1154,24 @@ function createClevelandMedalsPerGender(stats) {
 
 	datastats1 = datastats.filter(function (d) {
 		if (selectedCountries.length == 0) {
-			if (d.Participants > 5000)
-				return d;
+			if(flag){
+				if (d.Participants > 5000)
+					return d;}
+			else if(yearsFilter == "after"){
+				if (d.Participants > 1000)
+					return d;}
+			else{
+				if (d.Participants > 3000)
+					return d;
+			}
 		}
 		else if (selectedCountries.includes(d.Country))
 			return d;
 	})
 
-	if (d3.max(datastats1, (d) => d.PercMenMedalists) > d3.max(datastats1, (d) => d.PercWomenMedalists))
-		maxX = d3.max(datastats1, (d) => d.PercMenMedalists)
-	else maxX = d3.max(datastats1, (d) => d.PercWomenMedalists)
+	if (d3.max(datastats1, (d) => d.MenPerc) > d3.max(datastats1, (d) => d.WomenPerc))
+		maxX = d3.max(datastats1, (d) => d.MenPerc)
+	else maxX = d3.max(datastats1, (d) => d.WomenPerc)
 
 	const x = d3.scaleLinear()
 		.domain([0, maxX])
@@ -1124,8 +1203,8 @@ function createClevelandMedalsPerGender(stats) {
 	svg.selectAll(".line")
 		.transition()
 		.duration(2000)
-		.attr("x1", function (d) { return x(d.PercWomenMedalists); })
-		.attr("x2", function (d) { return x(d.PercMenMedalists); })
+		.attr("x1", function (d) { return x(d.WomenPerc); })
+		.attr("x2", function (d) { return x(d.MenPerc); })
 
 	tooltip_clg = d3.select("body")
 		.append("div")
@@ -1148,7 +1227,7 @@ function createClevelandMedalsPerGender(stats) {
 			tooltip_clg.transition().duration(200).style("opacity", 0.9);
 			tooltip_clg
 				.html(function () {
-					return "Women Percentage: " + d.PercWomenMedalists + "%";
+					return "Women Percentage: " + d.WomenPerc + "%";
 				})
 				.style("left", event.pageX + "px")
 				.style("top", event.pageY - 28 + "px");
@@ -1165,7 +1244,7 @@ function createClevelandMedalsPerGender(stats) {
 	svg.selectAll(".circle1")
 		.transition()
 		.duration(2000)
-		.attr("cx", function (d) { return x(d.PercWomenMedalists); })
+		.attr("cx", function (d) { return x(d.WomenPerc); })
 
 	svg.selectAll("mycircle")
 		.data(datastats1)
@@ -1183,7 +1262,7 @@ function createClevelandMedalsPerGender(stats) {
 			tooltip_clg.transition().duration(200).style("opacity", 0.9);
 			tooltip_clg
 				.html(function () {
-					return "Men Percentage " + d.PercMenMedalists + "%";
+					return "Men Percentage " + d.MenPerc + "%";
 				})
 				.style("left", event.pageX + "px")
 				.style("top", event.pageY - 28 + "px");
@@ -1199,17 +1278,17 @@ function createClevelandMedalsPerGender(stats) {
 	svg.selectAll(".circle2")
 		.transition()
 		.duration(2000)
-		.attr("cx", function (d) { return x(d.PercMenMedalists); })
+		.attr("cx", function (d) { return x(d.MenPerc); })
 
-	svg.append("circle").attr("cx", window.innerWidth * 0.12).attr("cy", window.innerHeight * 0.0000001).attr("r", 6).style("fill", "#ff1493")
-	svg.append("circle").attr("cx", window.innerWidth * 0.12).attr("cy", window.innerHeight * 0.03).attr("r", 6).style("fill", "#6c9dc4")
-	svg.append("text").attr("x", window.innerWidth * 0.125).attr("y", window.innerHeight * 0.000001).text("Women percentage")
+	svg.append("circle").attr("cx", window.innerWidth * 0.09).attr("cy", window.innerHeight * 0.0000001).attr("r", 6).style("fill", "#ff1493")
+	svg.append("circle").attr("cx", window.innerWidth * 0.155).attr("cy", window.innerHeight * 0.0000001).attr("r", 6).style("fill", "#6c9dc4")
+	svg.append("text").attr("x", window.innerWidth * 0.095).attr("y", window.innerHeight * 0.000001).text("Women % of")
 		.style("font-size", "13px").attr("alignment-baseline", "middle").style("font-family", "sans-serif")
-	svg.append("text").attr("x", window.innerWidth * 0.125).attr("y", window.innerHeight * 0.013).text("of medalists")
+	svg.append("text").attr("x", window.innerWidth * 0.095).attr("y", window.innerHeight * 0.013).text("medalists")
 		.style("font-size", "13px").attr("alignment-baseline", "middle").style("font-family", "sans-serif")
-	svg.append("text").attr("x", window.innerWidth * 0.125).attr("y", window.innerHeight * 0.03).text("Men percentage")
+	svg.append("text").attr("x", window.innerWidth * 0.16).attr("y", window.innerHeight * 0.0000001).text("Men % of")
 		.style("font-size", "13px").attr("alignment-baseline", "middle").style("font-family", "sans-serif")
-	svg.append("text").attr("x", window.innerWidth * 0.125).attr("y", window.innerHeight * 0.043).text("of medalists")
+	svg.append("text").attr("x", window.innerWidth * 0.16).attr("y", window.innerHeight * 0.013).text("medalists")
 		.style("font-size", "13px").attr("alignment-baseline", "middle").style("font-family", "sans-serif")
 
 	svg.append("text")
@@ -1242,6 +1321,20 @@ function handleClevelandClick(event, d) {
 	tooltip_cl.transition().duration(200).style("opacity", 0);
 	tooltip_clg.transition().duration(200).style("opacity", 0);
 
+	for (i = 0; i < datastats.length; i++) {
+		if (d.Country == datastats[i].Country && !selectedCountries.includes(d.Country)) {
+			if (nrCountries + 1 > 4) {
+				window.alert("Impossible to select more than 4 NOCs")
+				nrCountries -= counter;
+				return;
+			}
+			else {
+				counter++;
+				nrCountries++
+			}
+		}
+	}
+
 	cleveland1.remove()
 	cleveland2.remove()
 	progress.remove()
@@ -1268,56 +1361,89 @@ function handleClevelandClick(event, d) {
 			.style("stroke-width", 3);
 	}
 
-	if (countriesHost.includes(d.Country)) {
-		if (selectedCountries.includes(d.Country)) {
-			selectedCountries.forEach(function (c) {
-				if (c == d.Country) {
-					var newlist = [];
-					nrCountries--;
-					newlist.push(d.Country);
-					selectedCountries = selectedCountries.filter(function (el) {
-						return !newlist.includes(el);
-					});
+	if (selectedCountries.includes(d.Country)) {
+		for (i = 0; i < selectedCountries.length; i++) {
+			if (selectedCountries[i] === d.Country) {
+				colorPosition[i] = false
+				deleteLine(d.Country, false)
+				datastats.forEach(function (i) {
+					if (i.Country == d.Country)
+						nrCountries--
+				})
+				var newlist = [];
+				newlist.push(d.Country);
+
+				selectedCountries = selectedCountries.filter(function (el) {
+					return !newlist.includes(el);
+				});
+			}
+		}
+	} else if (!selectedCountries.includes(d.Country)) {
+		dataset1 = dataset.filter(function (c) {
+			if (d.Country === c.Country) {
+				if (!selectedCountries.includes(d.Country)) {
+					selectedCountries.push(d.Country);
+					return d.Country;
 				}
-			})
+			}
+		})
+
+	}
+
+	/* if (selectedCountries.includes(d.Country) && !countriesHost.includes(d.Country)) {
+		for (i = 0; i < selectedCountries.length; i++) {
+			if (selectedCountries[i] === d.Country) {
+				colorPosition[i] = false
+				deleteLine(d.Country, true)
+				datastats.forEach(function (i) {
+					if (i.Country == d.Country)
+						nrCountries--
+				})
+				var newlist = [];
+				newlist.push(d.Country);
+
+				selectedCountries = selectedCountries.filter(function (el) {
+					return !newlist.includes(el);
+				});
+			}
 		}
-		else {
-			selectedCountries.push(d.Country);
-			nrCountries++;
-		}
-	} else {
-		if (selectedCountries.includes(d.Country)) {
-			selectedCountries.forEach(function (c) {
-				if (c == d.Country) {
-					var newlist = [];
-					nrCountries--;
-					newlist.push(d.Country);
-					selectedCountries = selectedCountries.filter(function (el) {
-						return !newlist.includes(el);
-					});
+	} else if (!selectedCountries.includes(d.Country) && !countriesHost.includes(d.Country)) {
+		dataset1 = dataEvolution.filter(function (c) {
+			if (d.Country === c.Country) {
+				if (!selectedCountries.includes(d.Country)) {
+					selectedCountries.push(d.Country);
+					return d.Country;
 				}
-			})
-		}
-		else {
-			selectedCountries.push(d.Country);
-			nrCountries++;
-		}
+			}
+		})
+
+	} */
+
+	if(yearsFilter == "default"){
+		createClevelandMedalsPerPart(datastats, true);
+		createClevelandMedalsPerGender(datastats, true);
+	}
+	else{
+		createClevelandMedalsPerPart(datastats, false);
+		createClevelandMedalsPerGender(datastats, false);
 	}
 
 	if (selectedCountries.length == 0) {
-		createLineChart(dataset, "General", false, selectedCountries);
 		createProgressBar("", "", true);
-		deleteLine(d.Country, true)
+		if (selectedGroup == "General")
+			createLineChart(dataset, "General", false, selectedCountries);
+		else if (selectedGroup == "Women")
+			createLineChart(dataset, "Women", false, selectedCountries);
 	}
 	else if (selectedCountries.includes(d.Country)) {
-		updateLineChart("General", d.Country, selectedCountries);
+		if (selectedGroup == "General")
+			updateLineChart("General", d.Country, selectedCountries);
+		else if (selectedGroup == "Women")
+			updateLineChart("Women", d.Country, selectedCountries)
 	}
 	else {
 		deleteLine(d.Country, true)
 	}
-
-	createClevelandMedalsPerPart(datastats);
-	createClevelandMedalsPerGender(datastats);
 
 	data_aux = datastats.filter(function (d) {
 		if (selectedCountries.includes(d.Country))
@@ -1457,18 +1583,22 @@ function createProgressBar(country, women, flag) {
 		avgW = 0;
 		avgM = 0;
 		count = 0;
-
-		datastats.forEach(function (c) {
-			avgW = avgW + c.PercWomenMedalists;
-			avgM = avgM + c.PercMenMedalists;
-			count++;
+		womenMedl = 0
+		menMedl = 0
+		womenPart = 0
+		menPart = 0
+		datastats.forEach(function(c){
+			womenMedl = womenMedl + c.WomenMedalists;
+			womenPart = womenPart + c.WomenParticipants;
+			menMedl = menMedl + c.MenMedalists;
+			menPart = menPart + c.MenParticipants;
 		})
 
-		avgW = (avgW / count).toFixed(2);
-		avgM = (avgM / count).toFixed(2);
+		avgW = womenMedl / womenPart * 100;
+		avgM = menMedl / menPart * 100;
 
-		createBigProgress(avgW, true);
-		createBigProgress(avgM, false);
+		createBigProgress(avgW.toFixed(2), true);
+		createBigProgress(avgM.toFixed(2), false);
 	} else {
 
 		if (progSvg) {
@@ -1563,7 +1693,7 @@ function createProgressBar(country, women, flag) {
 			const fill = d3.scaleOrdinal()
 				.range(["#ff1493", "white"])
 
-			const data_aux = pie([['pais', country.PercWomenMedalists], ['', 100 - country.PercWomenMedalists]])
+			const data_aux = pie([['pais', country.WomenPerc], ['', 100 - country.WomenPerc]])
 
 			svg.append("text")
 				.text(country.NOC)
@@ -1594,7 +1724,7 @@ function createProgressBar(country, women, flag) {
 				.attr("text-anchor", "middle")
 				.transition()
 				.duration(200)
-				.text(country.PercWomenMedalists + "%")
+				.text(country.WomenPerc + "%")
 				.attr("font-size", "10px")
 				.attr("transform", `translate(${width / 16},${height / 4})`);
 
@@ -1635,7 +1765,7 @@ function createProgressBar(country, women, flag) {
 			const fill = d3.scaleOrdinal()
 				.range(["steelblue", "white"])
 
-			const data_aux = pie([['pais', country.PercMenMedalists], ['', 100 - country.PercMenMedalists]])
+			const data_aux = pie([['pais', country.MenPerc], ['', 100 - country.MenPerc]])
 
 			svg
 				.selectAll('progress')
@@ -1659,7 +1789,7 @@ function createProgressBar(country, women, flag) {
 				.transition()
 				.duration(200)
 				.attr("text-anchor", "middle")
-				.text(country.PercMenMedalists + "%")
+				.text(country.MenPerc + "%")
 				.attr("font-size", "10px")
 				.attr("transform", `translate(${width / 16},${height / 6})`);
 
@@ -1865,7 +1995,7 @@ function handleMouseClick(event, d) {
 			.style("stroke-width", 1);
 	}
 
-	if (selectedCountries.includes(d.properties.name) && countriesHost.includes(d.properties.name)) {
+	if (selectedCountries.includes(d.properties.name)) {
 		for (i = 0; i < selectedCountries.length; i++) {
 			if (selectedCountries[i] === d.properties.name) {
 				colorPosition[i] = false
@@ -1882,37 +2012,8 @@ function handleMouseClick(event, d) {
 				});
 			}
 		}
-	} else if (!selectedCountries.includes(d.properties.name) && countriesHost.includes(d.properties.name)) {
-		dataset1 = dataset.filter(function (c) {
-			if (d.properties.name === c.Country) {
-				if (!selectedCountries.includes(d.properties.name)) {
-					selectedCountries.push(d.properties.name);
-					return d.properties.name;
-				}
-			}
-		})
-
-	}
-
-	if (selectedCountries.includes(d.properties.name) && !countriesHost.includes(d.properties.name)) {
-		for (i = 0; i < selectedCountries.length; i++) {
-			if (selectedCountries[i] === d.properties.name) {
-				colorPosition[i] = false
-				deleteLine(d.properties.name, true)
-				datastats.forEach(function (i) {
-					if (i.Country == d.properties.name)
-						nrCountries--
-				})
-				var newlist = [];
-				newlist.push(d.properties.name);
-
-				selectedCountries = selectedCountries.filter(function (el) {
-					return !newlist.includes(el);
-				});
-			}
-		}
-	} else if (!selectedCountries.includes(d.properties.name) && !countriesHost.includes(d.properties.name)) {
-		dataset1 = dataEvolution.filter(function (c) {
+	} else if (!selectedCountries.includes(d.properties.name)) {
+		dataset1 = datastats.filter(function (c) {
 			if (d.properties.name === c.Country) {
 				if (!selectedCountries.includes(d.properties.name)) {
 					selectedCountries.push(d.properties.name);
@@ -1923,8 +2024,15 @@ function handleMouseClick(event, d) {
 
 	}
 	
-	createClevelandMedalsPerPart(datastats);
-	createClevelandMedalsPerGender(datastats);
+	if(yearsFilter == "default"){
+		createClevelandMedalsPerPart(datastats, true);
+		createClevelandMedalsPerGender(datastats, true);
+	}
+	else{
+		createClevelandMedalsPerPart(datastats, false);
+		createClevelandMedalsPerGender(datastats, false);
+	}
+
 	if (selectedCountries.length == 0) {
 		createProgressBar("", "", true);
 		if (selectedGroup == "General")
@@ -1965,17 +2073,18 @@ function deleteLine(country, flag) {
 
 	data1 = dataEvolution.filter(function (d) {
 		if (d.Country == country) {
-
 			return d;
 		}
 	})
 
+	var path;
 	for (i = 0; i < data1.length; i++) {
 		if (data1[i].NOC) {
 			path = "#" + data1[i].NOC;
 			break;
 		}
 	}
+
 	d3.select("div#secondLine").selectAll(path).remove()
 
 	if (flag) {
@@ -2144,20 +2253,26 @@ function handleClickLine(event, d) {
 		}
 	}
 
-	createClevelandMedalsPerPart(datastats);
-	createClevelandMedalsPerGender(datastats);
+	if(yearsFilter == "default"){
+		createClevelandMedalsPerPart(datastats, true);
+		createClevelandMedalsPerGender(datastats, true);
+	}
+	else{
+		createClevelandMedalsPerPart(datastats, false);
+		createClevelandMedalsPerGender(datastats, false);
+	}
 
 	data_aux = datastats.filter(function (d) {
-		if (selectedCountries.includes(d.Country) || selectedCountries.includes(d.Country))
+		if (selectedCountries.includes(d.Country))
 			return d;
 	})
 
 	progress.remove()
 	nrNocsM = 0;
 	nrNocsW = 0;
+	progSvg = true;
 
 	data_aux.forEach(function (c) {
-		progSvg = true;
 		aux = c;
 		createProgressBar(aux, 1, false);
 		createProgressBar(aux, 0, false);
@@ -2204,6 +2319,187 @@ function update(selectedGroup) {
 					legendselected_Countries.push(iter);
 					updateLineChart("Women", iter, legendselected_Countries);
 				}
+			}
+			break;
+	}
+}
+
+function filterYears(years) {
+	cleveland1 = d3.select("div#clevelandMedalsP").select("svg")
+	cleveland2 = d3.select("div#clevelandMedalsG").select("svg")
+	progress = d3.select("div#progressBar").selectAll("svg")
+	choropleth = d3.select("div#choropleth").select("svg")
+	flag1 = false;
+
+	switch (years) {
+		case "After":
+			auxCountries = nrCountries;
+			nrCountries = 0;
+			for(j = 0; j < selectedCountries.length; j++){
+				for(i = 0; i < after2000.length; i++){
+					if (selectedCountries[j] == after2000[i].Country) {
+						if (nrCountries + 1 > 4) {
+							window.alert("Impossible to move to another filter. The countries selected are going to have more than 4 NOCs in total.")
+							nrCountries -= auxCountries;
+							return;
+						}
+						else {
+							flag1 = true;
+							nrCountries++
+						}
+					}
+				}
+				if(!flag1) return;
+			}
+
+			cleveland1.remove()
+			cleveland2.remove()
+			progress.remove()
+			choropleth.remove()
+			
+			datastats = after2000;
+			dataEvolution = lineafter;
+			dataset = after2000h;
+			yearsFilter = "after"
+			
+			createClevelandMedalsPerGender(datastats, false)
+			createClevelandMedalsPerPart(datastats, false)
+			createChoroplethMap()
+			addZoom();
+			colorPosition = [false, false, false, false]
+			if(selectedCountries.length == 0){
+				d3.selectAll("#general").remove()
+				d3.selectAll("#women").remove()
+				createLineChart(dataset, selectedGroup, false, selectedCountries)
+				createProgressBar("","", true)
+			}
+			else{
+				data_aux = datastats.filter(function (d) {
+					if (selectedCountries.includes(d.Country))
+					return d;
+				})
+				progress.remove()
+				nrNocsM = 0;
+				nrNocsW = 0;
+				progSvg = true;
+			
+				data_aux.forEach(function (c) {
+					aux = c;
+					createProgressBar(aux, 1, false);
+					createProgressBar(aux, 0, false);
+					return c;
+				})
+			}
+
+			selectedCountries.forEach(function (d){
+				deleteLine(d, true)
+				updateLineChart(selectedGroup, d, selectedCountries)
+			})
+			
+			break;
+		case "Before":
+			for(j = 0; j < selectedCountries.length; j++){
+				for(i = 0; i < before2000.length; i++){
+					if (selectedCountries[j] == before2000[i].Country) {
+						if (nrCountries + 1 > 4) {
+							window.alert("Impossible to move to another filter. The countries selected are going to have more than 4 NOCs in total.")
+							nrCountries -= auxCountries;
+							return;
+						}
+						else {
+							flag1 = true;
+							nrCountries++
+						}
+					}
+				}
+				if(!flag1) return;
+			}
+
+			cleveland1.remove()
+			cleveland2.remove()
+			progress.remove()
+			choropleth.remove()
+			
+			datastats = before2000;
+			dataEvolution = linebefore;
+			dataset = before2000h;
+			yearsFilter = "before";
+			createClevelandMedalsPerGender(datastats, false)
+			createClevelandMedalsPerPart(datastats, false)
+			createChoroplethMap()
+			addZoom();
+			colorPosition = [false, false, false, false]
+
+			selectedCountries.forEach(function (d){
+				deleteLine(d, true)
+				updateLineChart(selectedGroup, d, selectedCountries)
+			})
+			if(selectedCountries.length == 0){
+				d3.selectAll("#general").remove()
+				d3.selectAll("#women").remove()
+				createLineChart(dataset, selectedGroup, false, selectedCountries)
+				createProgressBar("","", true)
+			}	
+			else{
+				data_aux = datastats.filter(function (d) {
+					if (selectedCountries.includes(d.Country))
+					return d;
+				})
+				progress.remove()
+				nrNocsM = 0;
+				nrNocsW = 0;
+				progSvg = true;
+			
+				data_aux.forEach(function (c) {
+					aux = c;
+					createProgressBar(aux, 1, false);
+					createProgressBar(aux, 0, false);
+					return c;
+				})
+			}
+			break;
+		case "All":
+			cleveland1.remove()
+			cleveland2.remove()
+			progress.remove()
+			choropleth.remove()
+			datastats = all;
+			yearsFilter = "default"
+			dataset = allhosts;
+			dataEvolution = lineall;
+			createClevelandMedalsPerGender(datastats, true)
+			createClevelandMedalsPerPart(datastats, true)
+			createChoroplethMap()
+			addZoom();
+			colorPosition = [false, false, false, false]
+			selectedCountries.forEach(function (d){
+				deleteLine(d, true)
+				updateLineChart(selectedGroup, d, selectedCountries)
+			})
+
+			if(selectedCountries.length == 0){
+				d3.selectAll("#general").remove()
+				d3.selectAll("#women").remove()
+				createLineChart(dataset, selectedGroup, false, selectedCountries)
+				createProgressBar("","", true)
+			}	
+			else{
+				data_aux = datastats.filter(function (d) {
+					if (selectedCountries.includes(d.Country))
+						return d;
+				})
+			
+				progress.remove()
+				nrNocsM = 0;
+				nrNocsW = 0;
+				progSvg = true;
+			
+				data_aux.forEach(function (c) {
+					aux = c;
+					createProgressBar(aux, 1, false);
+					createProgressBar(aux, 0, false);
+					return c;
+				})
 			}
 			break;
 	}

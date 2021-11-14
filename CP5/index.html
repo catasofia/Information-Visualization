@@ -12,12 +12,15 @@
 
 	<!-- Import libraries. -->
 	<script language="JavaScript" type="text/javascript" src="libs/d3.min.js"></script>
-	<!-- <script language="JavaScript" type="text/javascript" src="libs/topojson.v3.min.js"></script> -->
-	<script src="//d3js.org/topojson.v1.min.js"></script>
-	
+	<script
+	language="JavaScript"
+	type="text/javascript"
+	src="libs/topojson.v3.min.js"
+  	></script>
 
 	<!-- JS -->
 	<script language="JavaScript" type="text/javascript" src="scripts/behavior.js"></script>
+
 
 	<!-- CSS -->
 	<link rel="stylesheet" href="style/styles.css">
@@ -32,6 +35,10 @@
 		<div id="selectButton" class="button"></div>
 		</div>
 	</div>
+	<button id="allyears" onclick="filterYears('All')">All Years</button>
+	<button id="after2000" onclick="filterYears('After')">After 2000</button>
+	<button id="before2000" onclick="filterYears('Before')">Before 2000</button>
+
 	<div id="choropleth">
 	</div>
 	<div id="progressBar">
