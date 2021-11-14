@@ -236,12 +236,18 @@ function createChoroplethMap() {
 		.attr("d", path)
 		.style("stroke", "#333333")
 		.style("fill", (function (d) {
-			var countries = [];
+			var countriesHost = [];
 			dataset.forEach(function (i) {
-				countries.push(i.Country);
+				countriesHost.push(i.Country);
+			})
+			var countriesPart = [];
+			dataEvolution.forEach(function (j) {
+				countriesPart.push(j.Country)
 			})
 			for (const x of dataset) {
-				if (!countries.includes(d.properties.name))
+				if (!countriesPart.includes(d.properties.name))
+					return "white";
+				if (!countriesHost.includes(d.properties.name))
 					return "#cccccc";
 				if (d.properties.name === x.Country) {
 					if ((x.MedalsHost - x.MedalAverage) < 0) return "#f5918c";
@@ -296,7 +302,7 @@ function createChoroplethMap() {
 		.style("font-size", "13px")
 		.style("font-family", "sans-serif")
 		.text("Difference between the medals")
-	
+
 	svg.append('text')
 		.attr('x', window.innerWidth * 0.001)
 		.attr('y', window.innerHeight * 0.20)
@@ -393,9 +399,6 @@ function createChoroplethMap() {
 }
 
 function createLineChart(data, group, value, local_Countries) {
-
-	//console.log(local_Countries);
-
 	var color = null
 	var nameOfLine;
 	selectedGroup = group;
@@ -490,7 +493,7 @@ function createLineChart(data, group, value, local_Countries) {
 		d3.select("div#secondLine")
 			.append("svg")
 			.append("g")
-			.attr("fill", "#444444")
+			.attr("fill", "#767676")
 			.append("path")
 	}
 
@@ -540,7 +543,7 @@ function createLineChart(data, group, value, local_Countries) {
 			.duration(3000) */
 			.attr("stroke", function (d) {
 				if (value || (selectedCountries.length == 0 && selectedCountries.length == 0)) {
-					color = "#444444"
+					color = "#767676"
 					return color
 				}
 				else {
@@ -600,7 +603,6 @@ function createLineChart(data, group, value, local_Countries) {
 		var yCPosition;
 		var xTPosition;
 		var yTPosition;
-
 
 		if (value || local_Countries.length == 0) {
 			xCPosition = 0.055
@@ -684,8 +686,6 @@ function createLineChart(data, group, value, local_Countries) {
 			if (d.Year !== 1916 && d.Year !== 1940 && d.Year !== 1944)
 				return d;
 		})
-
-		//console.log(dataCircles)
 
 		var selectCircle =
 			svg
@@ -978,7 +978,7 @@ function createClevelandMedalsPerPart(stats) {
 		.attr("cx", x(0))
 		.attr("cy", function (d) { return y(d.NOC); })
 		.attr("r", "6")
-		.style("fill", "#6c9dc4")
+		.style("fill", "#c39fd9")
 		.on("mouseover", function (event, d) {
 			d3.select(this)
 				.style("stroke", "black")
@@ -1012,7 +1012,7 @@ function createClevelandMedalsPerPart(stats) {
 		.attr("cx", x(0))
 		.attr("cy", function (d) { return y(d.NOC); })
 		.attr("r", "6")
-		.style("fill", "#444444")
+		.style("fill", "#767676")
 		.on("mouseover", function (event, d) {
 			d3.select(this)
 				.style("stroke", "black")
@@ -1032,6 +1032,14 @@ function createClevelandMedalsPerPart(stats) {
 			tooltip_cl.transition().duration(200).style("opacity", 0);
 		})
 		.on("click", handleClevelandClick)
+
+
+	svg.append("circle").attr("cx", window.innerWidth * 0.12).attr("cy", window.innerHeight * 0.0000001).attr("r", 6).style("fill", "#c39fd9")
+	svg.append("circle").attr("cx", window.innerWidth * 0.12).attr("cy", window.innerHeight * 0.02).attr("r", 6).style("fill", "#767676")
+	svg.append("text").attr("x", window.innerWidth * 0.125).attr("y", window.innerHeight * 0.004).text("Nr of medalists")
+		.style("font-size", "13px").attr("alignment-baseline", "middle").style("font-family", "sans-serif")
+	svg.append("text").attr("x", window.innerWidth * 0.125).attr("y", window.innerHeight * 0.025).text("Nr of participants")
+		.style("font-size", "13px").attr("alignment-baseline", "middle").style("font-family", "sans-serif")
 
 	svg.selectAll(".circle2")
 		.transition()
@@ -1189,6 +1197,17 @@ function createClevelandMedalsPerGender(stats) {
 		.transition()
 		.duration(2000)
 		.attr("cx", function (d) { return x(d.PercMenMedalists); })
+
+	svg.append("circle").attr("cx", window.innerWidth * 0.12).attr("cy", window.innerHeight * 0.0000001).attr("r", 6).style("fill", "#ff1493")
+	svg.append("circle").attr("cx", window.innerWidth * 0.12).attr("cy", window.innerHeight * 0.03).attr("r", 6).style("fill", "#6c9dc4")
+	svg.append("text").attr("x", window.innerWidth * 0.125).attr("y", window.innerHeight * 0.000001).text("Women percentage")
+		.style("font-size", "13px").attr("alignment-baseline", "middle").style("font-family", "sans-serif")
+	svg.append("text").attr("x", window.innerWidth * 0.125).attr("y", window.innerHeight * 0.013).text("of medalists")
+		.style("font-size", "13px").attr("alignment-baseline", "middle").style("font-family", "sans-serif")
+	svg.append("text").attr("x", window.innerWidth * 0.125).attr("y", window.innerHeight * 0.03).text("Men percentage")
+		.style("font-size", "13px").attr("alignment-baseline", "middle").style("font-family", "sans-serif")
+	svg.append("text").attr("x", window.innerWidth * 0.125).attr("y", window.innerHeight * 0.043).text("of medalists")
+		.style("font-size", "13px").attr("alignment-baseline", "middle").style("font-family", "sans-serif")
 
 	svg.append("text")
 		.style("font-size", "10px")
@@ -1797,7 +1816,7 @@ function handleMouseClick(event, d) {
 				.style("fill", function (d) {
 					if (selectedCountries.includes(d))
 						return "#6c9dc4";
-					else return "#444444";
+					else return "#767676";
 
 				})
 		}
@@ -1890,7 +1909,7 @@ function handleMouseClick(event, d) {
 			}
 		}
 	} else if (!selectedCountries.includes(d.properties.name) && !countriesHost.includes(d.properties.name)) {
-		dataset1 = datastats.filter(function (c) {
+		dataset1 = dataEvolution.filter(function (c) {
 			if (d.properties.name === c.Country) {
 				if (!selectedCountries.includes(d.properties.name)) {
 					selectedCountries.push(d.properties.name);
