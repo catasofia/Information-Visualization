@@ -26,19 +26,22 @@
 	<link rel="stylesheet" href="style/styles.css">
 </head>
 <body onload="init()">
-	<div id="top">
+	<div id="bar">
 		<div id="title" class="title">
 			<p>The Olympic Games and How Being The Host Affects the Difference of Medalists</p> 
 		</div>
 		<div id="extra">
-		<p>Select a country:</p> 
-		<div id="selectButton" class="button"></div>
+			<div id="selectButton" class="button"></div>
+			<p>Filter the years:</p>
+			<button id="allyears" class="but" onclick="filterYears('All')">All Years</button>
+			<button id="before2000" class="but" onclick="filterYears('Before')">Before 2000</button>
+			<button id="after2000" class="but" onclick="filterYears('After')">After 2000</button>
+			<p>The difference referred in the map is the difference between the medals won when the country was host and the average of when it was not.</p> 
+			<p>The initials NOC stand for National Olympic Committee.</p>
+			<p>The cuts in the line charts represent the years when there where no olympic games because of the World Wars (I and II).</p>
+			<p>The medalists difference per gender is the percentage of medalists relatively to the number o participants of that gender</p>
 		</div>
 	</div>
-	<button id="allyears" onclick="filterYears('All')">All Years</button>
-	<button id="after2000" onclick="filterYears('After')">After 2000</button>
-	<button id="before2000" onclick="filterYears('Before')">Before 2000</button>
-
 	<div id="choropleth">
 	</div>
 	<div id="progressBar">
@@ -55,10 +58,10 @@
 	<div id="secondLine">
 		<p>Evolution of Participants per Year</p>
 		<div id="General">
-			<button id="generalbutton" onclick="update('General')">General</button>
+			<button id="generalbutton" class="menb" onclick="update('General')">General</button>
 		</div>
 		<div id="Women">
-			<button id="womenbutton" onclick="update('Women')">Women</button>
+			<button id="womenbutton" class="womb" onclick="update('Women')">Women</button>
 		</div>
 	</div>
 	<div id="clevelandMedalsP">
