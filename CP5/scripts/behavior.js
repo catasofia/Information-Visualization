@@ -73,12 +73,12 @@ function init() {
 			.style("opacity", 0)
 
 		colorScaleMen = d3.scaleThreshold()
-			.domain([1, 2, 3, 4])
-			.range(d3.schemeBlues[5]);
+			.domain([1, 2, 3, 4, 5])
+			.range(d3.schemeBlues[6]);
 
 		colorScaleWomen = d3.scaleThreshold()
-			.domain([1, 2, 3, 4])
-			.range(["#facdd6", "#ffa3d2", "#ff69b4", "#ff1493"])
+			.domain([1, 2, 3, 4, 5])
+			.range(["#facdd6", "#ffa3d2", "#ff69b4", "#ff1493", "#ff1493"])
 
 		createChoroplethMap();
 		createProgressBar("", "", true)
@@ -181,7 +181,8 @@ function handleSelectClick(selectedOption) {
 			}
 		}
 	} else if (!selectedCountries.includes(selectedOption)) {
-		dataset1 = dataset.filter(function (c) {
+		//linha problematica
+		dataset1 = datastats.filter(function (c) {
 			if (selectedOption === c.Country) {
 				if (!selectedCountries.includes(selectedOption)) {
 					selectedCountries.push(selectedOption);
@@ -229,11 +230,11 @@ function handleSelectClick(selectedOption) {
 		createProgressBar(aux, 0, false);
 		return c;
 	})
-	tooltip_p.transition().duration(200).style("opacity", 0);
+	//tooltip_p.transition().duration(200).style("opacity", 0);
 }
 
 function createChoroplethMap() {
-	var width = window.innerWidth * 0.488;
+	var width = window.innerWidth * 0.546;
 	var height = window.innerHeight * 0.48;
 	var projection = d3
 		.geoMercator()
@@ -261,6 +262,9 @@ function createChoroplethMap() {
 		.attr("class", "country")
 		.attr("d", path)
 		.style("stroke", "#333333")
+		.style("stroke-width", function (d){
+			if(selectedCountries.includes(d.properties.name)) return "3";
+		})
 		.style("fill", (function (d) {
 			var countriesHost = [];
 			dataset.forEach(function (i) {
@@ -313,7 +317,7 @@ function createChoroplethMap() {
 		.attr("stop-color", "white");
 
 	linearGradient.append("stop")
-		.attr("offset", "85%")
+		.attr("offset", "80%")
 		.attr("stop-color", "#3e5f85");
 
 	linearGradient.append("stop")
@@ -337,7 +341,7 @@ function createChoroplethMap() {
 
 	svg.append('text')
 		.attr('x', window.innerWidth * 0.015)
-		.attr('y', window.innerHeight * 0.26)
+		.attr('y', window.innerHeight * 0.24)
 		.style('color', 'black')
 		.style("font-size", "13px")
 		.style("font-family", "sans-serif")
@@ -345,7 +349,7 @@ function createChoroplethMap() {
 
 	svg.append('text')
 		.attr('x', window.innerWidth * 0.015)
-		.attr('y', window.innerHeight * 0.29)
+		.attr('y', window.innerHeight * 0.27)
 		.style('color', 'black')
 		.style("font-size", "13px")
 		.style("font-family", "sans-serif")
@@ -353,7 +357,7 @@ function createChoroplethMap() {
 
 	svg.append('text')
 		.attr('x', window.innerWidth * 0.015)
-		.attr('y', window.innerHeight * 0.32)
+		.attr('y', window.innerHeight * 0.30)
 		.style('color', 'black')
 		.style("font-size", "13px")
 		.style("font-family", "sans-serif")
@@ -361,7 +365,7 @@ function createChoroplethMap() {
 
 	svg.append('text')
 		.attr('x', window.innerWidth * 0.015)
-		.attr('y', window.innerHeight * 0.35)
+		.attr('y', window.innerHeight * 0.325)
 		.style('color', 'black')
 		.style("font-size", "13px")
 		.style("font-family", "sans-serif")
@@ -369,7 +373,7 @@ function createChoroplethMap() {
 
 	svg.append('text')
 		.attr('x', window.innerWidth * 0.015)
-		.attr('y', window.innerHeight * 0.375)
+		.attr('y', window.innerHeight * 0.35)
 		.style('color', 'black')
 		.style("font-size", "13px")
 		.style("font-family", "sans-serif")
@@ -377,7 +381,7 @@ function createChoroplethMap() {
 
 	svg.append('text')
 		.attr('x', window.innerWidth * 0.015)
-		.attr('y', window.innerHeight * 0.40)
+		.attr('y', window.innerHeight * 0.375)
 		.style('color', 'black')
 		.style("font-size", "13px")
 		.style("font-family", "sans-serif")
@@ -385,7 +389,7 @@ function createChoroplethMap() {
 
 	svg.append('text')
 		.attr('x', window.innerWidth * 0.015)
-		.attr('y', window.innerHeight * 0.425)
+		.attr('y', window.innerHeight * 0.405)
 		.style('color', 'black')
 		.style("font-size", "13px")
 		.style("font-family", "sans-serif")
@@ -393,7 +397,7 @@ function createChoroplethMap() {
 
 	svg.append('text')
 		.attr('x', window.innerWidth * 0.015)
-		.attr('y', window.innerHeight * 0.45)
+		.attr('y', window.innerHeight * 0.43)
 		.style('color', 'black')
 		.style("font-size", "13px")
 		.style("font-family", "sans-serif")
@@ -401,7 +405,7 @@ function createChoroplethMap() {
 
 	svg.append('text')
 		.attr('x', window.innerWidth * 0.015)
-		.attr('y', window.innerHeight * 0.475)
+		.attr('y', window.innerHeight * 0.455)
 		.style('color', 'black')
 		.style("font-size", "13px")
 		.style("font-family", "sans-serif")
@@ -413,10 +417,10 @@ function createLineChart(data, group, value, local_Countries) {
 	var nameOfLine;
 	selectedGroup = group;
 
-	width = window.innerWidth / 2.6;
-	height = window.innerHeight * 0.34;
+	width = window.innerWidth / 2.35;
+	height = window.innerHeight * 0.39;
 
-	margin = { top: 20, right: 40, bottom: 31, left: 50 };
+	margin = { top: 23, right: 40, bottom: 31, left: 50 };
 
 	tooltip_lc = d3.select("body")
 		.append("div")
@@ -506,10 +510,23 @@ function createLineChart(data, group, value, local_Countries) {
 			.domain([0, 1500])
 			.range([height - margin.bottom, margin.top]);
 	}
-	else if (group == "Women") {
+	else if (group == "Women" && yearsFilter == "default") {
 		y = d3
 			.scaleLinear()
 			.domain([0, 350])
+			.range([height - margin.bottom, margin.top]);
+	}
+
+	else if (group == "Women" && yearsFilter == "before") {
+		y = d3
+			.scaleLinear()
+			.domain([0, 350])
+			.range([height - margin.bottom, margin.top]);
+	}
+	else if (group == "Women" && yearsFilter == "after") {
+		y = d3
+			.scaleLinear()
+			.domain([0, 500])
 			.range([height - margin.bottom, margin.top]);
 	}
 
@@ -567,7 +584,7 @@ function createLineChart(data, group, value, local_Countries) {
 		.attr("x", 0 - height / 10)
 		.attr("dy", "1em")
 		.attr("text-anchor", "end")
-		.style("font-size", "10px")
+		.style("font-size", "11px")
 		.style("text-color", "black")
 		.style("font-family", "sans-serif")
 		.text("Nr of participants");
@@ -594,8 +611,6 @@ function createLineChart(data, group, value, local_Countries) {
 				}
 				else {
 					for (i = 0; i < colorPosition.length; i++) {
-						console.log(i)
-						console.log(colorPosition[i])
 						if (!colorPosition[i] && color == null) {
 							colorPosition[i] = true
 							color = colorScaleMen(i + 1)
@@ -960,7 +975,7 @@ function updateLineChart(group, country, aux_countries) {
 function createClevelandMedalsPerPart(stats, flag) {
 	const margin = { top: 28, right: 15, bottom: 30, left: 40 },
 		width = window.innerWidth / 5 - margin.left - margin.right,
-		height = window.innerHeight * 0.25;
+		height = window.innerHeight * 0.3535;
 
 	d3.select("div#clevelandMedalsP")
 		.append("svg")
@@ -1091,11 +1106,11 @@ function createClevelandMedalsPerPart(stats, flag) {
 		.on("click", handleClevelandClick)
 
 
-	svg.append("circle").attr("cx", window.innerWidth * 0.12).attr("cy", window.innerHeight * 0.0000001).attr("r", 6).style("fill", "#c39fd9")
-	svg.append("circle").attr("cx", window.innerWidth * 0.12).attr("cy", window.innerHeight * 0.02).attr("r", 6).style("fill", "#767676")
-	svg.append("text").attr("x", window.innerWidth * 0.125).attr("y", window.innerHeight * 0.004).text("Nr of medalists")
+	svg.append("circle").attr("cx", window.innerWidth * 0.01).attr("cy", window.innerHeight * 0.0000001).attr("r", 6).style("fill", "#c39fd9")
+	svg.append("circle").attr("cx", window.innerWidth * 0.11).attr("cy", window.innerHeight * 0.0000001).attr("r", 6).style("fill", "#767676")
+	svg.append("text").attr("x", window.innerWidth * 0.015).attr("y", window.innerHeight * 0.004).text("Nr of medalists")
 		.style("font-size", "13px").attr("alignment-baseline", "middle").style("font-family", "sans-serif")
-	svg.append("text").attr("x", window.innerWidth * 0.125).attr("y", window.innerHeight * 0.025).text("Nr of participants")
+	svg.append("text").attr("x", window.innerWidth * 0.115).attr("y", window.innerHeight * 0.004).text("Nr of participants")
 		.style("font-size", "13px").attr("alignment-baseline", "middle").style("font-family", "sans-serif")
 
 	svg.selectAll(".circle2")
@@ -1116,7 +1131,7 @@ function createClevelandMedalsPerPart(stats, flag) {
 		.style("font-size", "10px")
 		.attr("class", "y label")
 		.attr("text-anchor", "end")
-		.attr("y", -width/4)
+		.attr("y", -width/9)
 		.attr("dy", ".75em")
 		.attr("transform", "rotate(-90)")
 		.style("font-family", "sans-serif")
@@ -1126,7 +1141,7 @@ function createClevelandMedalsPerPart(stats, flag) {
 function createClevelandMedalsPerGender(stats, flag) {
 	const margin = { top: 28, right: 30, bottom: 30, left: 40 },
 		width = window.innerWidth / 4.7 - margin.left - margin.right,
-		height = window.innerHeight * 0.25;
+		height = window.innerHeight * 0.3535;
 
 
 	const svg = d3.select("#clevelandMedalsG")
@@ -1213,7 +1228,7 @@ function createClevelandMedalsPerGender(stats, flag) {
 				.html(function () {
 					return "Women Percentage: " + d.WomenPerc + "%";
 				})
-				.style("left", event.pageX -70 +"px")
+				.style("left", event.pageX - 120 +"px")
 				.style("top", event.pageY - 28 + "px");
 		})
 		.on("mouseleave", function (d) {
@@ -1248,7 +1263,7 @@ function createClevelandMedalsPerGender(stats, flag) {
 				.html(function () {
 					return "Men Percentage " + d.MenPerc + "%";
 				})
-				.style("left", event.pageX - 70 + "px")
+				.style("left", event.pageX - 120 + "px")
 				.style("top", event.pageY - 28 + "px");
 		})
 		.on("mouseleave", function (d) {
@@ -1264,15 +1279,15 @@ function createClevelandMedalsPerGender(stats, flag) {
 		.duration(2000)
 		.attr("cx", function (d) { return x(d.MenPerc); })
 
-	svg.append("circle").attr("cx", window.innerWidth * 0.09).attr("cy", window.innerHeight * 0.0000001).attr("r", 6).style("fill", "#ff1493")
-	svg.append("circle").attr("cx", window.innerWidth * 0.155).attr("cy", window.innerHeight * 0.0000001).attr("r", 6).style("fill", "#6c9dc4")
-	svg.append("text").attr("x", window.innerWidth * 0.095).attr("y", window.innerHeight * 0.000001).text("Women % of")
+	svg.append("circle").attr("cx", window.innerWidth * 0.01).attr("cy", window.innerHeight * 0.0000001).attr("r", 6).style("fill", "#ff1493")
+	svg.append("circle").attr("cx", window.innerWidth * 0.11).attr("cy", window.innerHeight * 0.0000001).attr("r", 6).style("fill", "#6c9dc4")
+	svg.append("text").attr("x", window.innerWidth * 0.015).attr("y", window.innerHeight * 0.000001).text("Women % of")
 		.style("font-size", "13px").attr("alignment-baseline", "middle").style("font-family", "sans-serif")
-	svg.append("text").attr("x", window.innerWidth * 0.095).attr("y", window.innerHeight * 0.013).text("medalists")
+	svg.append("text").attr("x", window.innerWidth * 0.015).attr("y", window.innerHeight * 0.013).text("medalists")
 		.style("font-size", "13px").attr("alignment-baseline", "middle").style("font-family", "sans-serif")
-	svg.append("text").attr("x", window.innerWidth * 0.16).attr("y", window.innerHeight * 0.0000001).text("Men % of")
+	svg.append("text").attr("x", window.innerWidth * 0.115).attr("y", window.innerHeight * 0.0000001).text("Men % of")
 		.style("font-size", "13px").attr("alignment-baseline", "middle").style("font-family", "sans-serif")
-	svg.append("text").attr("x", window.innerWidth * 0.16).attr("y", window.innerHeight * 0.013).text("medalists")
+	svg.append("text").attr("x", window.innerWidth * 0.115).attr("y", window.innerHeight * 0.013).text("medalists")
 		.style("font-size", "13px").attr("alignment-baseline", "middle").style("font-family", "sans-serif")
 
 	svg.append("text")
@@ -1288,7 +1303,7 @@ function createClevelandMedalsPerGender(stats, flag) {
 		.style("font-size", "10px")
 		.attr("class", "y label")
 		.attr("text-anchor", "end")
-		.attr("y", -40)
+		.attr("y", -width/9)
 		.attr("dy", ".75em")
 		.attr("transform", "rotate(-90)")
 		.style("font-family", "sans-serif")
@@ -1363,7 +1378,7 @@ function handleClevelandClick(event, d) {
 			}
 		}
 	} else if (!selectedCountries.includes(d.Country)) {
-		dataset1 = dataset.filter(function (c) {
+		dataset1 = datastats.filter(function (c) {
 			if (d.Country === c.Country) {
 				if (!selectedCountries.includes(d.Country)) {
 					selectedCountries.push(d.Country);
@@ -1444,7 +1459,7 @@ function handleClevelandClick(event, d) {
 
 function createBigProgress(value, women) {
 
-	const width = window.innerWidth * 0.445;
+	const width = window.innerWidth * 0.42;
 	height = window.innerHeight * 0.383;
 
 	if (women) {
@@ -1467,16 +1482,16 @@ function createBigProgress(value, women) {
 
 		svg.append("text")
 			.text("Women")
-			.attr("font-size", "13px")
-			.attr("transform", `translate(${width / 6.5},${height / 14})`);
+			.attr("font-size", "14px")
+			.attr("transform", `translate(${width / 8},${height / 14})`);
 
 		svg
 			.selectAll('progress')
 			.data(data_aux)
 			.join('path')
 			.attr('d', d3.arc()
-				.innerRadius(50)
-				.outerRadius(80)
+				.innerRadius(width/12)
+				.outerRadius(width/7)
 			)
 			.attr('fill', d => fill(d.data))
 			.style("opacity", 1)
@@ -1485,7 +1500,7 @@ function createBigProgress(value, women) {
 
 
 		svg.selectAll('path')
-			.attr("transform", `translate(${width / 5},${height / 2})`);
+			.attr("transform", `translate(${width / 6.3},${height / 2})`);
 
 		svg.append("text")
 			.attr("text-anchor", "middle")
@@ -1493,7 +1508,7 @@ function createBigProgress(value, women) {
 			.duration(200)
 			.text(value + "%")
 			.attr("font-size", "20px")
-			.attr("transform", `translate(${width / 5},${height / 2})`);
+			.attr("transform", `translate(${width / 6.3},${height / 2})`);
 	} else {
 
 		svg = d3.select("div#progressBar")
@@ -1513,8 +1528,8 @@ function createBigProgress(value, women) {
 
 		svg.append("text")
 			.text("Men")
-			.attr("font-size", "13px")
-			.attr("transform", `translate(${width / 2.7},${height / 14})`);
+			.attr("font-size", "14px")
+			.attr("transform", `translate(${width / 2.8},${height / 14})`);
 
 		svg
 			.selectAll('progress')
@@ -1523,14 +1538,14 @@ function createBigProgress(value, women) {
 			.attr('d', d3.arc()
 				//.startAngle(0)
 				//.endAngle(Math.PI * 2)
-				.innerRadius(50)
-				.outerRadius(80)
+				.innerRadius(width/12)
+				.outerRadius(width/7)
 			)
 			.attr('fill', d => fill(d.data))
 			.style("opacity", 1)
 			.style("stroke", d => stroke(d.data))
 			.style("stroke-width", 2)
-			.attr("transform", `translate(${width / 2.5},${height / 2})`);
+			.attr("transform", `translate(${width / 2.6},${height / 2})`);
 
 		svg.append("text")
 			.attr("text-anchor", "middle")
@@ -1538,7 +1553,7 @@ function createBigProgress(value, women) {
 			.duration(200)
 			.text(value + "%")
 			.attr("font-size", "20px")
-			.attr("transform", `translate(${width / 2.5},${height / 2})`);
+			.attr("transform", `translate(${width / 2.6},${height / 2})`);
 	}
 
 }
@@ -1546,7 +1561,7 @@ function createBigProgress(value, women) {
 function createProgressBar(country, women, flag) {
 
 	const width = window.innerWidth * 0.449;
-	height = window.innerHeight * 0.401;
+	height = window.innerHeight * 0.428;
 
 	const radius = 30;
 
@@ -1590,54 +1605,54 @@ function createProgressBar(country, women, flag) {
 				.select("#progressw_1")
 				.append("svg")
 				.attr("width", width / 8)
-				.attr("height", height / 2.038)
+				.attr("height", height / 2.02)
 
 			svg = d3.select("div#progressBar")
 				.select("#progressw_2")
 				.append("svg")
 				.attr("width", width / 8)
-				.attr("height", height / 2.038)
+				.attr("height", height / 2.02)
 				.append("g")
 
 			svg = d3.select("div#progressBar")
 				.select("#progressw_3")
 				.append("svg")
 				.attr("width", width / 8)
-				.attr("height", height / 2.038)
+				.attr("height", height / 2.02)
 				.append("g")
 
 			svg = d3.select("div#progressBar")
 				.select("#progressw_4")
 				.append("svg")
 				.attr("width", width / 8)
-				.attr("height", height / 2.038)
+				.attr("height", height / 2.02)
 				.append("g")
 
 			svg = d3.select("div#progressBar")
 				.select("#progressm_1")
 				.append("svg")
 				.attr("width", width / 8)
-				.attr("height", height / 2.038)
+				.attr("height", height / 2.02)
 
 			svg = d3.select("div#progressBar")
 				.select("#progressm_2")
 				.append("svg")
 				.attr("width", width / 8)
-				.attr("height", height / 2.038)
+				.attr("height", height / 2.02)
 				.append("g")
 
 			svg = d3.select("div#progressBar")
 				.select("#progressm_3")
 				.append("svg")
 				.attr("width", width / 8)
-				.attr("height", height / 2.038)
+				.attr("height", height / 2.02)
 				.append("g")
 
 			svg = d3.select("div#progressBar")
 				.select("#progressm_4")
 				.append("svg")
 				.attr("width", width / 8)
-				.attr("height", height / 2.038)
+				.attr("height", height / 2.02)
 				.append("g")
 		}
 
@@ -1658,7 +1673,7 @@ function createProgressBar(country, women, flag) {
 						.html(function () {
 							return "Country:<br>" + country.Country;
 						})
-						.style("left", event.pageX + "px")
+						.style("left", event.pageX - 130 + "px")
 						.style("top", event.pageY - 28 + "px");
 				})
 				.on("mouseleave", function (d) {
@@ -1682,7 +1697,7 @@ function createProgressBar(country, women, flag) {
 			svg.append("text")
 				.text(country.NOC)
 				.attr("font-size", "10px")
-				.attr("transform", `translate(${width / 24},${height / 14})`);
+				.attr("transform", `translate(${width / 23},${height / 14})`);
 
 			svg
 				.selectAll('progress')
@@ -1691,8 +1706,8 @@ function createProgressBar(country, women, flag) {
 				.attr('d', d3.arc()
 					//.startAngle(0)
 					//.endAngle(Math.PI * 2)
-					.innerRadius(20)
-					.outerRadius(radius)
+					.innerRadius(width/30)
+					.outerRadius(width/17)
 				)
 				.attr('fill', d => fill(d.data))
 				.style("opacity", 1)
@@ -1709,7 +1724,7 @@ function createProgressBar(country, women, flag) {
 				.transition()
 				.duration(200)
 				.text(country.WomenPerc + "%")
-				.attr("font-size", "10px")
+				.attr("font-size", "14px")
 				.attr("transform", `translate(${width / 16},${height / 4})`);
 
 			nrNocsW++;
@@ -1727,7 +1742,7 @@ function createProgressBar(country, women, flag) {
 						.html(function () {
 							return "Country:<br>" + country.Country;
 						})
-						.style("left", event.pageX + "px")
+						.style("left", event.pageX - 130 + "px")
 						.style("top", event.pageY - 28 + "px");
 				})
 				.on("mouseleave", function (d) {
@@ -1756,8 +1771,8 @@ function createProgressBar(country, women, flag) {
 				.data(data_aux)
 				.join('path')
 				.attr('d', d3.arc()
-					.innerRadius(20)
-					.outerRadius(radius)
+					.innerRadius(width/30)
+					.outerRadius(width/17)
 				)
 				.attr('fill', d => fill(d.data))
 				.style("opacity", 1)
@@ -1774,7 +1789,7 @@ function createProgressBar(country, women, flag) {
 				.duration(200)
 				.attr("text-anchor", "middle")
 				.text(country.MenPerc + "%")
-				.attr("font-size", "10px")
+				.attr("font-size", "14px")
 				.attr("transform", `translate(${width / 16},${height / 6})`);
 
 			nrNocsM++;
@@ -2273,7 +2288,6 @@ function handleClickLine(event, d) {
 }
 
 function update(selectedGroup) {
-
 	for (let i = 0; i < legendselected_Countries.length; i++) {
 		legendselected_Countries.pop();
 	}
@@ -2352,12 +2366,12 @@ function filterYears(years) {
 			dataEvolution = lineafter;
 			dataset = after2000h;
 			yearsFilter = "after"
+			colorPosition = [false, false, false, false]
 			
 			createClevelandMedalsPerGender(datastats, false)
 			createClevelandMedalsPerPart(datastats, false)
 			createChoroplethMap()
 			addZoom();
-			colorPosition = [false, false, false, false]
 			if(selectedCountries.length == 0){
 				d3.selectAll("#general").remove()
 				d3.selectAll("#women").remove()
@@ -2382,26 +2396,22 @@ function filterYears(years) {
 				})
 			}
 
-			selectedCountries.forEach(function (d){
-				deleteLine(d, true)
-				updateLineChart(selectedGroup, d, selectedCountries)
-			})
+			for (const iter of selectedCountries) {
+				deleteLine(iter, false)
+			}
+			for (const iter of selectedCountries) {
+				legendselected_Countries.push(iter);
+				updateLineChart(selectedGroup, iter, legendselected_Countries);
+			}
 			
 			break;
 		case "Before":
 			auxCountries = nrCountries;
 			nrCountries = 0;
 			for(j = 0; j < selectedCountries.length; j++){
-				console.log("auuuuuiiii");
 				for(i = 0; i < before2000.length; i++){
-					console.log("ooo");
-
 					if (selectedCountries[j] == before2000[i].Country) {
-						console.log(selectedCountries[j]);
-						console.log(before2000[i].NOC)
-
 						if (nrCountries + 1 > 4) {
-							console.log(nrCountries);
 							window.alert("Impossible to move to another filter. The countries selected are going to have more than 4 NOCs in total.")
 							nrCountries -= auxCountries;
 							return;
@@ -2430,10 +2440,15 @@ function filterYears(years) {
 			addZoom();
 			colorPosition = [false, false, false, false]
 
-			selectedCountries.forEach(function (d){
-				deleteLine(d, true)
-				updateLineChart(selectedGroup, d, selectedCountries)
-			})
+			for (const iter of selectedCountries) {
+				deleteLine(iter, false)
+			}
+			for (const iter of selectedCountries) {
+				legendselected_Countries.push(iter);
+				updateLineChart(selectedGroup, iter, legendselected_Countries);
+			}
+
+
 			if(selectedCountries.length == 0){
 				d3.selectAll("#general").remove()
 				d3.selectAll("#women").remove()
@@ -2474,10 +2489,14 @@ function filterYears(years) {
 			createChoroplethMap()
 			addZoom();
 			colorPosition = [false, false, false, false]
-			selectedCountries.forEach(function (d){
-				deleteLine(d, true)
-				updateLineChart(selectedGroup, d, selectedCountries)
-			})
+			
+			for (const iter of selectedCountries) {
+				deleteLine(iter, false)
+			}
+			for (const iter of selectedCountries) {
+				legendselected_Countries.push(iter);
+				updateLineChart(selectedGroup, iter, legendselected_Countries);
+			}
 
 			if(selectedCountries.length == 0){
 				d3.selectAll("#general").remove()

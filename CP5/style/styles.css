@@ -9,7 +9,7 @@ div.tooltip {
     width: 15%;
     height: 7%;
     padding: 5px;
-    font: 12px sans-serif;
+    font: 14px sans-serif;
     color: #528aae;
     background: white;
     border-style: solid;
@@ -25,7 +25,7 @@ div.tooltip_cl {
     width: 5%;
     height: 4%;
     padding: 5px;
-    font: 12px sans-serif;
+    font: 14px sans-serif;
     color: #528aae;
     background: white;
     border-style: solid;
@@ -41,7 +41,7 @@ div.tooltip_clg {
     width: 5%;
     height: 7%;
     padding: 5px;
-    font: 12px sans-serif;
+    font: 14px sans-serif;
     color: #528aae;
     background: white;
     border-style: solid;
@@ -57,7 +57,7 @@ div.tooltip_p {
     width: 6%;
     height: 7%;
     padding: 5px;
-    font: 12px sans-serif;
+    font: 14px sans-serif;
     color: #528aae;
     background: white;
     border-style: solid;
@@ -73,7 +73,7 @@ div.tooltip_lc {
     width: 5%;
     height: 4%;
     padding: 5px;
-    font: 12px sans-serif;
+    font: 14px sans-serif;
     color: #528aae;
     background: white;
     border-style: solid;
@@ -89,7 +89,7 @@ div.tooltip_l {
     width: 7%;
     height: 6.5%;
     padding: 5px;
-    font: 12px sans-serif;
+    font: 14px sans-serif;
     color: #528aae;
     background: white;
     border-style: solid;
@@ -99,17 +99,17 @@ div.tooltip_l {
     pointer-events: none;
     text-shadow: 0px 0px;
 }div#bar{
-    margin-left: -1.5%;
-    margin-top: -0.75%;
+    margin-left: -1.05%;
+    margin-top: -0.40%;
     padding: 0;
-    width: 17%;
+    width: 13%;
     background-color: #7291ba;
     position: absolute;
     height: 100%;
     overflow: hidden;
 }div#title{
     width: 90%;
-    height: 21%;
+    height: 15%;
     margin-left: 7%;
     margin-right: 2%;
     margin-top: 2%;
@@ -117,7 +117,7 @@ div.tooltip_l {
     color: white;
     text-align:center;
     font-family: Arial, Helvetica, sans-serif;
-    font-size: 20px;
+    font-size: 30px;
 }div#extra{
     width: 90%;
     margin-left: 7%;
@@ -126,14 +126,14 @@ div.tooltip_l {
     font-family: Arial, Helvetica, sans-serif;
     font-weight: normal;
     text-align: justify;
-    font-size: 14px;
+    font-size: 16px;
     text-shadow: 0px 0px;
 }.button{
     height:2%;
     width:90%;
     margin-left: 1%;
     margin-bottom: 20%;
-    margin-top: 10%;
+    margin-top: 55%;
     position: relative;
 }
 .but{
@@ -146,31 +146,31 @@ div.tooltip_l {
 }#allyears{
     margin-left: 30%;
 }#after2000{
-    margin-left: 1%;
-    margin-top: 2%;
+    margin-left: 2%;
+    margin-top: 3%;
     margin-bottom: 2%;
     position: relative;
 }#before2000{
-    margin-left: 4%;
-    margin-top: 2%;
+    margin-left: 7%;
+    margin-top: 3%;
     margin-bottom: 4%;
     position: relative;
 }
 div#choropleth{
-    width: 50%;
+    width: 55%;
     background-color: white;
     border-style: solid; 
     border-color: #3e5f85;
     border-width: 2px;
     border-radius:20px; 
     margin-right: 0.70%;
-    margin-left: 16.15%;
+    margin-left: 12.5%;
     font-size: 15px;
     text-shadow: 0px 0px;
     margin-bottom: 0.75%;
 }
 div#progressBar{
-    width: 32%; 
+    width: 30.58%; 
     height: 41%;
     background-color: white;
     border-style: solid; 
@@ -194,7 +194,7 @@ div#progressBar{
     position: relative;
 }
 div#secondLine{
-    width: 40%;
+    width: 44.001%;
     height: 50%;
     background-color: white;
     border-style: solid;
@@ -202,7 +202,7 @@ div#secondLine{
     border-width: 2px;
     border-radius:20px; 
     margin-right: 0.75%;
-    margin-left: 16.15%;
+    margin-left: 12.5%;
     color: #3e5f85;
     font-family: Arial, Helvetica, sans-serif;
     font-weight: bold;
@@ -212,7 +212,7 @@ div#secondLine{
     overflow: hidden;
 }
 div#clevelandMedalsG{
-    width: 20.52%;
+    width: 20.4665%;
     background-color: white;
     border-style: solid;
     border-color: #3e5f85;
@@ -229,13 +229,13 @@ div#clevelandMedalsG{
 }
 
 div#clevelandMedalsP{
-    width: 20.52%;
+    width: 20.4665%;
     background-color: white;
     border-style: solid;
     border-color: #3e5f85;
     border-width: 2px;
     border-radius:20px;
-    margin-right:  0.70%;
+    margin-right:  0.7002%;
     box-sizing: border-box;
     color: #3e5f85;
     font-family: Arial, Helvetica, sans-serif;
