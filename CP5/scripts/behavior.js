@@ -181,7 +181,6 @@ function handleSelectClick(selectedOption) {
 			}
 		}
 	} else if (!selectedCountries.includes(selectedOption)) {
-		//linha problematica
 		dataset1 = datastats.filter(function (c) {
 			if (selectedOption === c.Country) {
 				if (!selectedCountries.includes(selectedOption)) {
@@ -230,7 +229,6 @@ function handleSelectClick(selectedOption) {
 		createProgressBar(aux, 0, false);
 		return c;
 	})
-	//tooltip_p.transition().duration(200).style("opacity", 0);
 }
 
 function createChoroplethMap() {
@@ -602,8 +600,6 @@ function createLineChart(data, group, value, local_Countries) {
 		svg
 			.append("svg:path")
 			.datum(data)
-			/* .transition()
-			.duration(3000) */
 			.attr("stroke", function (d) {
 				if (value || (selectedCountries.length == 0 && selectedCountries.length == 0)) {
 					color = "#767676"
@@ -658,7 +654,6 @@ function createLineChart(data, group, value, local_Countries) {
 						if (datastats[i].Country == country)
 							NOCs.push(datastats[i].NOC)
 					}
-					console.log(NOCs)
 					for (const x of NOCs) {
 						d3.select("div#secondLine").selectAll("#" + x).style("stroke-width", 4)
 						d3.select("div#secondLine").selectAll("#" + x).transition().duration(100).attr("r", 6)
@@ -852,8 +847,6 @@ function createLineChart(data, group, value, local_Countries) {
 		svg
 			.append("svg:path")
 			.datum(data)
-			/* .transition()
-			.duration(3000) */
 			.attr("stroke", function (d) {
 				if (value || (selectedCountries.length == 0 && selectedCountries.length == 0)) {
 					colorWomen = "#ff1493"
@@ -1275,7 +1268,6 @@ function createClevelandMedalsPerPart(stats, flag) {
 					NOCs.push(datastats[i].NOC)
 			}
 			
-			console.log(NOCs)
 			for (const x of NOCs) {
 				d3.select("div#secondLine").selectAll("#" + x).style("stroke-width", 2)
 				d3.select("div#secondLine").selectAll("#" + x).transition().duration(100).attr("r", 3.5)
@@ -1347,7 +1339,6 @@ function createClevelandMedalsPerPart(stats, flag) {
 				if (datastats[i].Country == country)
 					NOCs.push(datastats[i].NOC)
 			}
-			console.log(NOCs)
 			for (const x of NOCs) {
 				d3.select("div#secondLine").selectAll("#" + x).style("stroke-width", 4)
 				d3.select("div#secondLine").selectAll("#" + x).transition().duration(100).attr("r", 6)
@@ -1558,8 +1549,6 @@ function createClevelandMedalsPerGender(stats, flag) {
 				if (datastats[i].Country == country)
 					NOCs.push(datastats[i].NOC)
 			}
-			console.log(country)
-			console.log(NOCs)
 			for (const x of NOCs) {
 				d3.select("div#secondLine").selectAll("#" + x).style("stroke-width", 4)
 				d3.select("div#secondLine").selectAll("#" + x).transition().duration(100).attr("r", 6)
@@ -1673,7 +1662,6 @@ function createClevelandMedalsPerGender(stats, flag) {
 			}
 		})
 		.on("mouseleave", function (d, j) {
-			console.log("olaaa")
 			tooltip_clg.transition().duration(200).style("opacity", 0);
 
 			country = ""
@@ -1698,14 +1686,11 @@ function createClevelandMedalsPerGender(stats, flag) {
 				.transition()
 				.duration(200)
 				.style("stroke", "#333333")
-			console.log(country)
 			NOCs = []
 			for (i = 0; i < datastats.length; i++) {
 				if (datastats[i].Country == country)
 					NOCs.push(datastats[i].NOC)
 			}
-			console.log("adeusss")
-			console.log(NOCs)
 			for (const x of NOCs) {
 				d3.select("div#secondLine").selectAll("#" + x).style("stroke-width", 2)
 				d3.select("div#secondLine").selectAll("#" + x).transition().duration(100).attr("r", 3.5)
@@ -1834,35 +1819,6 @@ function handleClevelandClick(event, d) {
 
 	}
 
-	/* if (selectedCountries.includes(d.Country) && !countriesHost.includes(d.Country)) {
-		for (i = 0; i < selectedCountries.length; i++) {
-			if (selectedCountries[i] === d.Country) {
-				colorPosition[i] = false
-				deleteLine(d.Country, true)
-				datastats.forEach(function (i) {
-					if (i.Country == d.Country)
-						nrCountries--
-				})
-				var newlist = [];
-				newlist.push(d.Country);
-
-				selectedCountries = selectedCountries.filter(function (el) {
-					return !newlist.includes(el);
-				});
-			}
-		}
-	} else if (!selectedCountries.includes(d.Country) && !countriesHost.includes(d.Country)) {
-		dataset1 = dataEvolution.filter(function (c) {
-			if (d.Country === c.Country) {
-				if (!selectedCountries.includes(d.Country)) {
-					selectedCountries.push(d.Country);
-					return d.Country;
-				}
-			}
-		})
-
-	} */
-
 	if (yearsFilter == "default") {
 		createClevelandMedalsPerPart(datastats, true);
 		createClevelandMedalsPerGender(datastats, true);
@@ -1981,8 +1937,6 @@ function createBigProgress(value, women) {
 			.data(data_aux)
 			.join('path')
 			.attr('d', d3.arc()
-				//.startAngle(0)
-				//.endAngle(Math.PI * 2)
 				.innerRadius(width / 12)
 				.outerRadius(width / 7)
 			)
@@ -2149,8 +2103,6 @@ function createProgressBar(country, women, flag) {
 				.data(data_aux)
 				.join('path')
 				.attr('d', d3.arc()
-					//.startAngle(0)
-					//.endAngle(Math.PI * 2)
 					.innerRadius(width / 30)
 					.outerRadius(width / 17)
 				)
